@@ -43,8 +43,7 @@ If you need to stop the bot, run this command (owner only).
 count::kill
 ```
 
-You can also mention the bot instead of using the `count::` prefix, useful on
-mobile.
+If `count::` is too cumbersome, you can either use `c.` or mention the bot.
 
 ## Setup
 

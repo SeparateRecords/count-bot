@@ -13,7 +13,7 @@ load_dotenv(find_dotenv(), verbose=True)
 
 assets = Path(__file__).parent / "assets"
 
-prefix = commands.when_mentioned_or("count::")
+prefix = commands.when_mentioned_or("count::", "c.")
 client = commands.Bot(prefix)
 
 
@@ -31,7 +31,7 @@ async def log_command_usage(ctx: commands.Context):
     logging.info(msg)
 
 
-@client.group(pass_context=True)
+@client.command()
 @commands.guild_only()
 async def start(ctx: commands.Context):
     """Start counting down from 3 in your voice channel (alias for 'from 3')."""

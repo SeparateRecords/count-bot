@@ -42,7 +42,15 @@ async def on_ready():
 @client.before_invoke
 async def log_command_usage(ctx: commands.Context):
     """Log each command used, along with the author and timestamp."""
-    msg = f"{ctx.author} used command '{ctx.prefix}{ctx.command}' at {ctx.message.created_at}"
+    msg = f"{ctx.author} used '{ctx.prefix}{ctx.command}' at {ctx.message.created_at}"
+
+    if ctx.guild:
+        guild = ctx.guild
+        channel = ctx.channel
+        msg += f" in #{channel} ({channel.id}) of '{guild}' ({guild.id})"
+    else:
+        msg += f" in a DM"
+
     logging.info(msg)
 
 
@@ -101,7 +109,7 @@ async def start_from(ctx: commands.Context, begin: int):
 @client.command(aliases=["die"])
 @commands.is_owner()
 async def kill(ctx: commands.Context):
-    await ctx.send("Bye!")
+    await ctx.send("Closing down.")
     await client.close()
 
 

@@ -1,10 +1,11 @@
 import asyncio
 import logging
 from pathlib import Path
+from typing import List
 
 import click
 import discord
-from discord.ext import commands
+import discord.ext.commands as commands
 from dotenv import find_dotenv, load_dotenv
 
 logging.basicConfig(level=logging.INFO)
@@ -13,8 +14,19 @@ load_dotenv(find_dotenv(), verbose=True)
 
 assets = Path(__file__).parent / "assets"
 
-prefix = commands.when_mentioned_or("count::", "c.")
-client = commands.Bot(prefix)
+
+def prefix(bot: commands.Bot, msg: discord.Message) -> List[str]:
+    """Invoke with `count::`, a mention, or no prefix in `#bot` or `#count-bot`."""
+    prefixes = commands.when_mentioned(bot, msg)
+    prefixes.append("count::")
+
+    if msg.channel.name in {"count-bot", "bot"}:
+        prefixes.append("")
+
+    return prefixes
+
+
+client = commands.Bot(command_prefix=prefix)
 
 
 @client.event

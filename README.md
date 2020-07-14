@@ -43,7 +43,9 @@ If you need to stop the bot, run this command (owner only).
 count::kill
 ```
 
-If `count::` is too cumbersome, you can either use `c.` or mention the bot.
+If `count::` is too cumbersome, you can omit the prefix if the channel is named
+`#bot` or `#count-bot`. Alternatively, you can mention the bot - useful on
+mobile.
 
 ## Setup
 

@@ -20,7 +20,10 @@ def prefix(bot: commands.Bot, msg: discord.Message) -> List[str]:
     prefixes = commands.when_mentioned(bot, msg)
     prefixes.append("count::")
 
-    if msg.channel.name in {"count-bot", "bot"}:
+    # DMChannel has no `name` property.
+    name = getattr(msg.channel, "name", "")
+
+    if name in {"bot", "count-bot", "the-count"} or not name:
         prefixes.append("")
 
     return prefixes

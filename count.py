@@ -72,6 +72,8 @@ async def start_from(ctx: commands.Context, begin: int):
     except asyncio.TimeoutError:
         return await ctx.send("Timed out while connecting.")
 
+    await asyncio.sleep(0.5)
+
     # The stop param is non-inclusive, offset by 1.
     for i in reversed(range(begin + 1)):
         path = assets / f"{i}.wav"

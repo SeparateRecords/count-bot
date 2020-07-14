@@ -42,7 +42,7 @@ async def on_ready():
 @client.before_invoke
 async def log_command_usage(ctx: commands.Context):
     """Log each command used, along with the author and timestamp."""
-    msg = f"{ctx.author} used command '{ctx.command}' at {ctx.message.created_at}"
+    msg = f"{ctx.author} used command '{ctx.prefix}{ctx.command}' at {ctx.message.created_at}"
     logging.info(msg)
 
 

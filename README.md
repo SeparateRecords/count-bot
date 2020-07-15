@@ -43,16 +43,24 @@ If you need to stop the bot, run this command (owner only).
 count::kill
 ```
 
+<img width="500px" align="right" alt="Watch & discuss movies. Use &lt;@593717174732980224&gt; to count down. Commands: 'help'" src="https://user-images.githubusercontent.com/52195359/87511345-7fe1ad80-c6b8-11ea-87ba-1a5aac608f19.png">
+
 ### Advanced
 
-If `count::` is too cumbersome, you can mention the bot. Alternatively, you can omit the
-prefix entirely if the channel topic at-mentions the bot.
+If `count::` is too cumbersome, you can mention the bot instead of using it.
+Alternatively, you can omit the prefix entirely if the channel topic mentions
+the bot.
+
+See an example channel topic on the right. ➟<br>
+<sub>[Read more on formatting][format].</sub>
+
+[format]: https://discord.com/developers/docs/reference#message-formatting-formats
 
 ## Setup
 
-You'll need Git, Python (minimum is 3.6), and **[Poetry]** to run this bot. Some level of
-technical knowledge is expected. If you care enough to write a better tutorial,
-send a PR!
+You'll need Git, Python (minimum is 3.6), and **[Poetry]** to run this bot.
+Some level of technical knowledge is expected. If you care enough to write a
+better tutorial, send a PR!
 
 [Poetry]: https://python-poetry.org/docs/#installation
 

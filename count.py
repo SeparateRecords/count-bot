@@ -16,7 +16,7 @@ assets = Path(__file__).parent / "assets"
 
 
 def prefix(bot: commands.Bot, msg: discord.Message) -> List[str]:
-    """Invoke with `count::`, a mention, or no prefix in `#bot` or `#count-bot`."""
+    """Invoke with `count::`, a mention, or nothing if the topic mentions the bot."""
     prefixes = commands.when_mentioned(bot, msg)
     prefixes.append("count::")
 
@@ -36,8 +36,8 @@ client = commands.Bot(command_prefix=prefix)
 @client.event
 async def on_ready():
     logging.info(f"Bot is ready: {client.user}")
-    logging.info(f"Bot ID: {client.user.id}")
-    logging.info(f"Owner ID: {client.owner_id}")
+    logging.info(f"Bot ID: . . . {client.user.id}")
+    logging.info(f"Owner ID: . . {client.owner_id}")
 
 
 @client.event

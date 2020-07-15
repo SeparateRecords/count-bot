@@ -68,12 +68,13 @@ better tutorial, send a PR!
 git clone https://github.com/SeparateRecords/count-bot
 cd count-bot
 poetry install
-poetry run bot -t "<YOUR_BOT_TOKEN>" -o "<YOUR_DISCORD_ID>"
+poetry run bot --token "<YOUR_BOT_TOKEN>" --owner "<YOUR_DISCORD_ID>"
 ```
 
-You can set the bot token (`COUNT_BOT_TOKEN`) and owner ID (`COUNT_BOT_OWNER`)
-environment variables. Copy `.example.env` to `.env` and fill in the
-credentials.
+Instead of the CLI, you can use environment variables to store your bot's
+credentials. Set the token with `COUNT_BOT_TOKEN` and the owner ID with
+`COUNT_BOT_OWNER`. These can be put in a `.env` file - copy `.example.env` to
+`.env` to get started.
 
 ```
 cp .example.env .env

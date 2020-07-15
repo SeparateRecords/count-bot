@@ -1,6 +1,6 @@
 # Voice Count (Discord bot)
 
-Go to: **[Usage]**, **[Setup]**, **[License]**
+Jump to: **[Usage]**, **[Setup]**, **[License]**
 
 [Usage]: #usage
 [Setup]: #setup
@@ -43,13 +43,14 @@ If you need to stop the bot, run this command (owner only).
 count::kill
 ```
 
-If `count::` is too cumbersome, you can omit the prefix if the channel is named
-`#bot` or `#count-bot`. Alternatively, you can mention the bot - useful on
-mobile.
+### Advanced
+
+If `count::` is too cumbersome, you can mention the bot. Alternatively, you can omit the
+prefix entirely if the channel topic at-mentions the bot.
 
 ## Setup
 
-You'll need Git, Python, and **[Poetry]** to run this bot. Some level of
+You'll need Git, Python (minimum is 3.6), and **[Poetry]** to run this bot. Some level of
 technical knowledge is expected. If you care enough to write a better tutorial,
 send a PR!
 

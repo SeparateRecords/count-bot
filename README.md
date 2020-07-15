@@ -50,9 +50,9 @@ count::kill
 If `count::` is too cumbersome, you can mention the bot instead. Alternatively,
 you can omit the prefix entirely if the channel topic mentions the bot.
 
-See an example channel topic on the right. ➟
+See an example channel topic on the right.  ➟
 
-<sup>[Read more on formatting][format].</sup>
+<sup>[Read more on mention formatting][format].</sup>
 
 [format]: https://discord.com/developers/docs/reference#message-formatting-formats
 

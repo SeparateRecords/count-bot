@@ -27,14 +27,14 @@ You must be in a voice channel the bot can join.
 To count down from 3, run this command.
 
 ```
-count::start
+count::go
 ```
 
-If you want to count from a number that _isn't_ 3, use the `from` command. You
-can only use numbers between 0 and 5 (inclusive).
+If you want to count from a number that _isn't_ 3, use the `go from` command.
+You can only use numbers between 0 and 5 (inclusive).
 
 ```
-count::from 5
+count::go from 5
 ```
 
 If you need to stop the bot, run this command (owner only).
@@ -47,12 +47,12 @@ count::kill
 
 ### Advanced
 
-If `count::` is too cumbersome, you can mention the bot instead of using it.
-Alternatively, you can omit the prefix entirely if the channel topic mentions
-the bot.
+If `count::` is too cumbersome, you can mention the bot instead. Alternatively,
+you can omit the prefix entirely if the channel topic mentions the bot.
 
-See an example channel topic on the right. ➟<br>
-<sub>[Read more on formatting][format].</sub>
+See an example channel topic on the right. ➟
+
+<sup>[Read more on formatting][format].</sup>
 
 [format]: https://discord.com/developers/docs/reference#message-formatting-formats
 

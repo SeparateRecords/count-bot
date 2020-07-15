@@ -50,7 +50,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
 @client.before_invoke
 async def log_command_usage(ctx: commands.Context):
     """Log each command used, along with the author and timestamp."""
-    msg = f"{ctx.author} used '{ctx.prefix}{ctx.command}' at {ctx.message.created_at}"
+    msg = f"{ctx.author} invoked '{ctx.message}' at {ctx.message.created_at}"
 
     if ctx.guild:
         guild = ctx.guild
@@ -62,18 +62,18 @@ async def log_command_usage(ctx: commands.Context):
     logging.info(msg)
 
 
-@client.command()
+@client.group()
 @commands.guild_only()
-async def start(ctx: commands.Context):
-    """Start counting down from 3 in your voice channel (alias for 'from 3')."""
-    if not ctx.invoked_subcommand:
-        await start_from(ctx, 3)
+async def go(ctx: commands.Context):
+    """Count down from 3 in your voice channel. Alias for 'go from 3'"""
+    if not ctx.subcommand_passed:
+        await go_from(ctx, 3)
 
 
-@client.command(name="from")
+@go.command(name="from")
 @commands.guild_only()
-async def start_from(ctx: commands.Context, begin: int):
-    """Start counting down from a given number in your voice channel (max = 5, min = 0)"""
+async def go_from(ctx: commands.Context, begin: int):
+    """Count down from a number in your voice channel (max = 5, min = 0)"""
     if ctx.voice_client is not None:
         return await ctx.send("I'm already counting, please wait until I'm done!")
 

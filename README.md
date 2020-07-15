@@ -43,14 +43,14 @@ If you need to stop the bot, run this command (owner only).
 count::kill
 ```
 
-<img width="500px" align="right" alt="Watch & discuss movies. Use &lt;@593717174732980224&gt; to count down. Commands: 'help'" src="https://user-images.githubusercontent.com/52195359/87511345-7fe1ad80-c6b8-11ea-87ba-1a5aac608f19.png">
+<img width="450px" align="right" alt="Watch & discuss movies. Use &lt;@593717174732980224&gt; to count down. Commands: 'help'" src="https://user-images.githubusercontent.com/52195359/87511345-7fe1ad80-c6b8-11ea-87ba-1a5aac608f19.png">
 
 ### Advanced
 
 If `count::` is too cumbersome, you can mention the bot instead. Alternatively,
 you can omit the prefix entirely if the channel topic mentions the bot.
 
-See an example channel topic on the right.  ➟
+See an example channel topic on the right.
 
 <sup>[Read more on mention formatting][format].</sup>
 

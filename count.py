@@ -40,6 +40,15 @@ async def on_ready():
     logging.info(f"Owner ID: {client.owner_id}")
 
 
+@bot.event
+async def on_command_error(ctx: commands.Context, error: commands.CommandError):
+    """Ignore `CommandNotFound` if the command prefix is omitted."""
+    # The prefix can only be omitted in specific channels, this is fine.
+    if isinstance(error, commands.CommandNotFound) and not ctx.prefix:
+        return
+    raise error
+
+
 @client.before_invoke
 async def log_command_usage(ctx: commands.Context):
     """Log each command used, along with the author and timestamp."""

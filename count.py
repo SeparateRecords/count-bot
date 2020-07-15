@@ -17,14 +17,12 @@ assets = Path(__file__).parent / "assets"
 
 def prefix(bot: commands.Bot, msg: discord.Message) -> List[str]:
     """Invoke with `count::`, a mention, or nothing if the topic mentions the bot."""
-    prefixes = commands.when_mentioned(bot, msg)
-    prefixes.append("count::")
+    prefixes = ["count::"]
+    prefixes += commands.when_mentioned(bot, msg)
 
-    # DMChannel has no `name` property.
     mention = bot.user.mention
     topic = getattr(msg.channel, "topic", mention)
-
-    if mention in topic:
+    if topic is not None and mention in topic:
         prefixes.append("")
 
     return prefixes

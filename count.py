@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO)
 
 load_dotenv(find_dotenv(), verbose=True)
 
-assets = Path(__file__).parent / "assets"
+assets = Path(__file__).parent.joinpath("assets").resolve()
 
 
 def prefix(bot: commands.Bot, msg: discord.Message) -> List[str]:
@@ -33,6 +33,7 @@ client = commands.Bot(command_prefix=prefix)
 
 @client.event
 async def on_ready():
+    """Log useful bot information on startup."""
     logging.info(f"Bot is ready: {client.user}")
     logging.info(f"Bot ID: . . . {client.user.id}")
     logging.info(f"Owner ID: . . {client.owner_id}")
@@ -94,14 +95,17 @@ async def go_from(ctx: commands.Context, begin: int):
     await asyncio.sleep(0.5)
 
     # The stop param is non-inclusive, offset by 1.
-    for i in reversed(range(begin + 1)):
-        path = assets / f"{i}.wav"
+    for n in reversed(range(begin + 1)):
+        file_name =  f"{n}.wav"
+        path = assets.joinpath("custom", file_name)
+        if not path.exists():
+            path = assets.joinpath("default", file_name)
         audio = discord.FFmpegPCMAudio(str(path))
 
         # If it's still playing, stop it and log a warning.
         if vc.is_playing():
             vc.stop()
-            logging.warning(f"{i+1}.wav is over 1 second, playback stopped.")
+            logging.warning(f"{n+1}.wav is over 1 second, playback stopped.")
 
         # Audio plays in a separate thread, don't await it.
         vc.play(audio)

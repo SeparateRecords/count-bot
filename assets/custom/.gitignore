@@ -1,0 +1,4 @@
+# This file servers two purposes:
+# 1. Keep the directory in the repository.
+# 2. Ignore all valid custom .wav files.
+[543210].wav

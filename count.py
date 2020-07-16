@@ -131,6 +131,7 @@ async def go_from(ctx: commands.Context, begin: int):
     await vc.disconnect()
 
 
+@client.command(aliases=["die"], brief="Shut down the bot.")
 @commands.is_owner()
 async def kill(ctx: commands.Context):
     await ctx.send("Closing connection and event loop.")

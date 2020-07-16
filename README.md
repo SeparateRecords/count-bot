@@ -52,13 +52,13 @@ you can omit the prefix entirely if the channel topic mentions the bot.
 
 See an example channel topic on the right.
 
-<sup>[Read more on mention formatting][format].</sup>
+<sup>[Read more on mention formatting.][format]</sup>
 
 [format]: https://discord.com/developers/docs/reference#message-formatting-formats
 
 ## Setup
 
-You'll need Git, Python (minimum is 3.6), and **[Poetry]** to run this bot.
+You'll need FFmpeg, Git, Python (minimum is 3.6), and **[Poetry]** to run this bot.
 Some level of technical knowledge is expected. If you care enough to write a
 better tutorial, send a PR!
 
@@ -68,7 +68,7 @@ better tutorial, send a PR!
 git clone https://github.com/SeparateRecords/count-bot
 cd count-bot
 poetry install
-poetry run bot --token "<YOUR_BOT_TOKEN>" --owner "<YOUR_DISCORD_ID>"
+poetry run bot --token "YOUR_BOT_TOKEN" --owner "YOUR_DISCORD_ID"
 ```
 
 Instead of the CLI, you can use environment variables to store your bot's
@@ -79,6 +79,23 @@ credentials. Set the token with `COUNT_BOT_TOKEN` and the owner ID with
 ```
 cp .example.env .env
 ```
+
+## Audio
+
+You can change the sound files played without changing the _committed_ files
+(from `default_audio/`) by placing a file with the same name in
+`custom_audio/`. You can use:
+
+* `5.wav`
+* `4.wav`
+* `3.wav`
+* `2.wav`
+* `1.wav`
+* `0.wav`
+
+All the audio files must be under 1 second in length. After 1 second, playback
+will be cut off and a warning will be logged, although it will continue
+counting fine. The only exception to this is `0.wav` - it can be over 1 second.
 
 ## License
 

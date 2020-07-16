@@ -12,23 +12,31 @@ logging.basicConfig(level=logging.INFO)
 
 load_dotenv(find_dotenv(), verbose=True)
 
-assets = Path(__file__).parent.joinpath("assets").resolve()
+repo = Path(__file__).resolve().parent
+custom = repo / "custom_audio"
+default = repo / "default_audio"
 
 
-def prefix(bot: commands.Bot, msg: discord.Message) -> List[str]:
+def first(iterable, check=bool, *, default=None):
+    """Get the first item of the iterable where `check(item)` isn't falsy."""
+    return next((item for item in iterable if check(item)), default)
+
+
+def get_prefix(bot: commands.Bot, msg: discord.Message) -> List[str]:
     """Invoke with `count::`, a mention, or nothing if the topic mentions the bot."""
     prefixes = ["count::"]
     prefixes += commands.when_mentioned(bot, msg)
 
     mention = bot.user.mention
     topic = getattr(msg.channel, "topic", mention)
-    if topic is not None and mention in topic:
+
+    if topic and mention in topic:
         prefixes.append("")
 
     return prefixes
 
 
-client = commands.Bot(command_prefix=prefix)
+client = commands.Bot(command_prefix=get_prefix)
 
 
 @client.event
@@ -63,7 +71,7 @@ async def log_command_usage(ctx: commands.Context):
     logging.info(msg)
 
 
-@client.group()
+@client.group(brief="Count down from 3.")
 @commands.guild_only()
 async def go(ctx: commands.Context):
     """Count down from 3 in your voice channel. Alias for 'go from 3'"""
@@ -71,7 +79,7 @@ async def go(ctx: commands.Context):
         await go_from(ctx, 3)
 
 
-@go.command(name="from")
+@go.command(name="from", brief="Count from a specific number.")
 @commands.guild_only()
 async def go_from(ctx: commands.Context, begin: int):
     """Count down from a number in your voice channel (max = 5, min = 0)"""
@@ -92,17 +100,22 @@ async def go_from(ctx: commands.Context, begin: int):
     except asyncio.TimeoutError:
         return await ctx.send("Timed out while connecting.")
 
+    # First audio file can get cut off at the start without waiting.
     await asyncio.sleep(0.5)
 
     # The stop param is non-inclusive, offset by 1.
     for n in reversed(range(begin + 1)):
-        file_name =  f"{n}.wav"
-        path = assets.joinpath("custom", file_name)
-        if not path.exists():
-            path = assets.joinpath("default", file_name)
+        wav = f"{n}.wav"
+        path = first((custom/wav, default/wav), lambda f: f.exists())
+
+        if not path:
+            logging.critical(f"File '{wav}' not present in default/ or custom/")
+            await vc.disconnect()
+            return await ctx.send(f"I don't know how to say {n}!")
+
         audio = discord.FFmpegPCMAudio(str(path))
 
-        # If it's still playing, stop it and log a warning.
+        # If the previous file is still playing, stop it and warn.
         if vc.is_playing():
             vc.stop()
             logging.warning(f"{n+1}.wav is over 1 second, playback stopped.")
@@ -118,10 +131,9 @@ async def go_from(ctx: commands.Context, begin: int):
     await vc.disconnect()
 
 
-@client.command(aliases=["die"])
 @commands.is_owner()
 async def kill(ctx: commands.Context):
-    await ctx.send("Closing down.")
+    await ctx.send("Closing connection and event loop.")
     await client.close()
 
 

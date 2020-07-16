@@ -59,7 +59,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
 @client.before_invoke
 async def log_command_usage(ctx: commands.Context):
     """Log each command used, along with the author and timestamp."""
-    msg = f"{ctx.author} invoked '{ctx.message}' at {ctx.message.created_at}"
+    msg = f"{ctx.author} invoked '{ctx.message.content}' at {ctx.message.created_at}"
 
     if ctx.guild:
         guild = ctx.guild
@@ -79,7 +79,7 @@ async def go(ctx: commands.Context):
         await go_from(ctx, 3)
 
 
-@go.command(name="from", brief="Count from a specific number.")
+@go.command(name="from", brief="Count down from a specific number.")
 @commands.guild_only()
 async def go_from(ctx: commands.Context, begin: int):
     """Count down from a number in your voice channel (max = 5, min = 0)"""
@@ -91,37 +91,28 @@ async def go_from(ctx: commands.Context, begin: int):
 
     try:
         vc: discord.VoiceClient = await ctx.author.voice.channel.connect()
-    except AttributeError:
-        return await ctx.send("You must be in a voice channel.")
-    except discord.ClientException:
-        return await ctx.send("Unable to join your voice channel.")
-    except discord.opus.OpusNotLoaded:
-        return await ctx.send("Opus isn't loaded.")
-    except asyncio.TimeoutError:
-        return await ctx.send("Timed out while connecting.")
+    except (AttributeError, discord.ClientException):
+        return await ctx.send("You must be in a voice channel I can join.")
 
     # First audio file can get cut off at the start without waiting.
     await asyncio.sleep(0.5)
 
     # The stop param is non-inclusive, offset by 1.
     for n in reversed(range(begin + 1)):
-        wav = f"{n}.wav"
-        path = first((custom/wav, default/wav), lambda f: f.exists())
-
-        if not path:
-            logging.critical(f"File '{wav}' not present in default/ or custom/")
-            await vc.disconnect()
-            return await ctx.send(f"I don't know how to say {n}!")
-
-        audio = discord.FFmpegPCMAudio(str(path))
 
         # If the previous file is still playing, stop it and warn.
         if vc.is_playing():
             vc.stop()
             logging.warning(f"{n+1}.wav is over 1 second, playback stopped.")
 
+        # 'path' will be None if the default is missing.
+        wav = f"{n}.wav"
+        path = first((custom/wav, default/wav), lambda f: f.exists())
+
         # Audio plays in a separate thread, don't await it.
+        audio = discord.FFmpegPCMAudio(str(path))
         vc.play(audio)
+
         await asyncio.sleep(1)
 
     # If the last file is over 1 second, sleep until it ends.
@@ -134,6 +125,7 @@ async def go_from(ctx: commands.Context, begin: int):
 @client.command(aliases=["die"], brief="Shut down the bot.")
 @commands.is_owner()
 async def kill(ctx: commands.Context):
+    """Close the connection to Discord, clean up the event loop, and exit."""
     await ctx.send("Closing connection and event loop.")
     await client.close()
 

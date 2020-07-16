@@ -58,9 +58,9 @@ See an example channel topic on the right.
 
 ## Setup
 
-You'll need FFmpeg, Git, Python (minimum is 3.6), and **[Poetry]** to run this bot.
-Some level of technical knowledge is expected. If you care enough to write a
-better tutorial, send a PR!
+You'll need FFmpeg, Git, Python (minimum is 3.6), and **[Poetry]** to run this
+bot. Some level of technical knowledge is expected. If you care enough to write
+a better tutorial, send a PR!
 
 [Poetry]: https://python-poetry.org/docs/#installation
 
@@ -82,9 +82,9 @@ cp .example.env .env
 
 ## Audio
 
-You can change the sound files played without changing the _committed_ files
-(from `default_audio/`) by placing a file with the same name in
-`custom_audio/`. You can use:
+You can use the `custom_audio/` directory to override the sound files in
+`default_audio/` without replacing or changing them. Here are the file names
+you can override:
 
 * `5.wav`
 * `4.wav`
@@ -97,10 +97,10 @@ All the audio files must be under 1 second in length. After 1 second, playback
 will be cut off and a warning will be logged, although it will continue
 counting fine. The only exception to this is `0.wav` - it can be over 1 second.
 
-## License
+## Contributions & License
 
 Any other long-distance couples with at least one nerd dedicated enough to run
-this are absolutely welcome to do so. Contributions are welcome, too!
+this are absolutely welcome to do so. Contributions are welcome!
 
 This code is provided under the ISC license (as are most of my projects). It's
 a simplified version of the MIT license.

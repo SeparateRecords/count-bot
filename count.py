@@ -36,18 +36,18 @@ def get_prefix(bot: commands.Bot, msg: discord.Message) -> List[str]:
     return prefixes
 
 
-client = commands.Bot(command_prefix=get_prefix)
+bot = commands.Bot(command_prefix=get_prefix)
 
 
-@client.event
+@bot.event
 async def on_ready():
     """Log useful bot information on startup."""
-    logging.info(f"Bot is ready: {client.user}")
-    logging.info(f"Bot ID: . . . {client.user.id}")
-    logging.info(f"Owner ID: . . {client.owner_id}")
+    logging.info(f"Bot is ready: {bot.user}")
+    logging.info(f"Bot ID: . . . {bot.user.id}")
+    logging.info(f"Owner ID: . . {bot.owner_id}")
 
 
-@client.event
+@bot.event
 async def on_command_error(ctx: commands.Context, error: commands.CommandError):
     """Ignore `CommandNotFound` if the command prefix is omitted."""
     # The prefix can only be omitted in specific channels, this is fine.
@@ -56,7 +56,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
     raise error
 
 
-@client.before_invoke
+@bot.before_invoke
 async def log_command_usage(ctx: commands.Context):
     """Log each command used, along with the author and timestamp."""
     msg = f"{ctx.author} invoked '{ctx.message.content}' at {ctx.message.created_at}"
@@ -71,7 +71,7 @@ async def log_command_usage(ctx: commands.Context):
     logging.info(msg)
 
 
-@client.group(brief="Count down from 3.")
+@bot.group(brief="Count down from 3.")
 @commands.guild_only()
 async def go(ctx: commands.Context):
     """Count down from 3 in your voice channel. Alias for 'go from 3'"""
@@ -122,12 +122,12 @@ async def go_from(ctx: commands.Context, begin: int):
     await vc.disconnect()
 
 
-@client.command(aliases=["die"], brief="Shut down the bot.")
+@bot.command(aliases=["die"], brief="Shut down the bot.")
 @commands.is_owner()
 async def kill(ctx: commands.Context):
     """Close the connection to Discord, clean up the event loop, and exit."""
     await ctx.send("Closing connection and event loop.")
-    await client.close()
+    await bot.close()
 
 
 @click.command()
@@ -141,8 +141,8 @@ def cli(ctx: click.Context, token: str, owner: int):
     if not owner:
         ctx.fail("The bot must have an owner.\nUsage: -o|--owner ID")
 
-    client.owner_id = owner
-    client.run(token)
+    bot.owner_id = owner
+    bot.run(token)
 
 
 if __name__ == "__main__":

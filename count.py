@@ -17,12 +17,15 @@ repo = Path(__file__).resolve().parent
 
 CUSTOM = repo / "custom_audio"
 DEFAULT = repo / "default_audio"
-SEQUENCE = (5, 4, 3, 2, 1, 0)
+SEQUENCE = 5, 4, 3, 2, 1, 0
 
 
 def first(iterable, check=bool, *, default=None):
     """Get the first item of the iterable where `check(item)` isn't falsy."""
-    return next((item for item in iterable if check(item)), default)
+    for item in iterable:
+        if check(item):
+            return item
+    return default
 
 
 def get_prefix(bot: commands.Bot, msg: discord.Message) -> list[str]:

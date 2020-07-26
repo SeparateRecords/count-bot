@@ -71,7 +71,7 @@ async def log_command_usage(ctx: commands.Context):
     logging.info(msg)
 
 
-@bot.group(brief="Count down from 3.")
+@bot.group(aliases=["count"], brief="Count down from 3.")
 @commands.guild_only()
 async def go(ctx: commands.Context):
     """Count down from 3 in your voice channel. Alias for 'go from 3'"""

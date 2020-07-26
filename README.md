@@ -1,10 +1,11 @@
 # Voice Count (Discord bot)
 
-Jump to: **[Usage]**, **[Setup]**, **[License]**
+Jump to: **[Usage]**, **[Setup]**, **[Audio]**, **[Contributions & Licence]**
 
 [Usage]: #usage
 [Setup]: #setup
-[License]: #license
+[Audio]: #audio
+[Contributions & Licence]: #contributions--license
 
 I watch a lot of movies with my girlfriend, using Discord for voice chat. We
 count down from 3 to start watching at the same time, but because of the delay

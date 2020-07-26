@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import asyncio
 import logging
 from pathlib import Path
-from typing import List
+from typing import Sequence
 
 import click
 import discord
@@ -13,8 +15,10 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv(find_dotenv(), verbose=True)
 
 repo = Path(__file__).resolve().parent
-custom = repo / "custom_audio"
-default = repo / "default_audio"
+
+CUSTOM = repo / "custom_audio"
+DEFAULT = repo / "default_audio"
+SEQUENCE = (5, 4, 3, 2, 1, 0)
 
 
 def first(iterable, check=bool, *, default=None):
@@ -22,15 +26,16 @@ def first(iterable, check=bool, *, default=None):
     return next((item for item in iterable if check(item)), default)
 
 
-def get_prefix(bot: commands.Bot, msg: discord.Message) -> List[str]:
+def get_prefix(bot: commands.Bot, msg: discord.Message) -> list[str]:
     """Invoke with `count::`, a mention, or nothing if the topic mentions the bot."""
     prefixes = ["count::"]
     prefixes += commands.when_mentioned(bot, msg)
 
-    mention = bot.user.mention
-    topic = getattr(msg.channel, "topic", mention)
+    # The channel (DM) has no topic? Pretend the topic is a mention.
+    # The topic will be None if unset, not an empty string :/
+    topic = getattr(msg.channel, "topic", bot.user.mention) or ""
 
-    if topic and mention in topic:
+    if bot.user.mention in topic:
         prefixes.append("")
 
     return prefixes
@@ -86,8 +91,8 @@ async def go_from(ctx: commands.Context, begin: int):
     if ctx.voice_client is not None:
         return await ctx.send("I'm already counting, please wait until I'm done!")
 
-    if begin not in range(6):
-        return await ctx.send("I can only count down using numbers between 0 and 5 :(")
+    if begin not in SEQUENCE:
+        return await ctx.send(f"I can only count down from these numbers: {SEQUENCE}")
 
     try:
         vc: discord.VoiceClient = await ctx.author.voice.channel.connect()
@@ -97,8 +102,8 @@ async def go_from(ctx: commands.Context, begin: int):
     # First audio file can get cut off at the start without waiting.
     await asyncio.sleep(0.5)
 
-    # The stop param is non-inclusive, offset by 1.
-    for n in reversed(range(begin + 1)):
+    # From the final item (0), take all items from 'begin' steps left.
+    for n in SEQUENCE[-1 - begin:]:
 
         # If the previous file is still playing, stop it and warn.
         if vc.is_playing():
@@ -107,7 +112,7 @@ async def go_from(ctx: commands.Context, begin: int):
 
         # 'path' will be None if the default is missing.
         wav = f"{n}.wav"
-        path = first((custom/wav, default/wav), lambda f: f.exists())
+        path = first((CUSTOM/wav, DEFAULT/wav), lambda f: f.exists())
 
         # Audio plays in a separate thread, don't await it.
         audio = discord.FFmpegPCMAudio(str(path))

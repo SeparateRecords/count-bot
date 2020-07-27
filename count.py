@@ -94,7 +94,7 @@ async def go_from(ctx: commands.Context, begin: int):
         return await ctx.send("I'm already counting, please wait until I'm done!")
 
     if begin not in SEQUENCE:
-        numbers = ", ".join(sorted(SEQUENCE))
+        numbers = ", ".join(map(str, sorted(SEQUENCE)))
         return await ctx.send(f"I can only count down from these numbers: {numbers}")
 
     try:

@@ -5,13 +5,13 @@ import logging
 from pathlib import Path
 
 import click
+import dotenv
 import discord
 import discord.ext.commands as commands
-from dotenv import find_dotenv, load_dotenv
 
 logging.basicConfig(level=logging.INFO)
 
-load_dotenv(find_dotenv(), verbose=True)
+dotenv.load_dotenv(verbose=True)
 
 repo = Path(__file__).resolve().parent
 
@@ -89,12 +89,13 @@ async def go(ctx: commands.Context):
 @go.command(name="from", brief="Count down from a specific number.")
 @commands.guild_only()
 async def go_from(ctx: commands.Context, begin: int):
-    """Count down from a number in your voice channel (max = 5, min = 0)"""
+    """Count down from a specific number in your voice channel."""
     if ctx.voice_client is not None:
         return await ctx.send("I'm already counting, please wait until I'm done!")
 
     if begin not in SEQUENCE:
-        return await ctx.send(f"I can only count down from these numbers: {SEQUENCE}")
+        numbers = ", ".join(sorted(SEQUENCE))
+        return await ctx.send(f"I can only count down from these numbers: {numbers}")
 
     try:
         vc: discord.VoiceClient = await ctx.author.voice.channel.connect()

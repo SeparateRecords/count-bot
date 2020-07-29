@@ -28,34 +28,27 @@ You must be in a voice channel the bot can join.
 To count down from 3, run this command.
 
 ```
-count::go
+.go
 ```
 
-If you want to count from a number that _isn't_ 3, use the `go from` command.
+If you want to count from a number that _isn't_ 3, use the `go in` command.
 You can only use numbers between 0 and 5 (inclusive).
 
 ```
-count::go from 5
+.go in 5
+```
+
+To say "Pause" instead of "Go", use `pause` instead of `go`.
+
+```
+.pause in 2
 ```
 
 If you need to stop the bot, run this command (owner only).
 
 ```
-count::kill
+.kys
 ```
-
-<img width="450px" align="right" alt="Watch & discuss movies. Use &lt;@593717174732980224&gt; to count down. Commands: 'help'" src="https://user-images.githubusercontent.com/52195359/87511345-7fe1ad80-c6b8-11ea-87ba-1a5aac608f19.png">
-
-### Advanced
-
-If `count::` is too cumbersome, you can mention the bot instead. Alternatively,
-you can omit the prefix entirely if the channel topic mentions the bot.
-
-See an example channel topic on the right.
-
-<sup>[Read more on mention formatting.][format]</sup>
-
-[format]: https://discord.com/developers/docs/reference#message-formatting-formats
 
 ## Setup
 

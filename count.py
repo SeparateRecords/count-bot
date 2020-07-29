@@ -113,9 +113,6 @@ async def kys(ctx: commands.Context):
 @bot.event
 async def on_ready():
     """Log useful bot information on startup."""
-    bot.add_cog(Counting())
-    logging.info("Added 'Counting' cog")
-
     logging.info(f"Bot is ready: {bot.user}")
     logging.info(f"Bot ID: . . . {bot.user.id}")
     logging.info(f"Owner ID: . . {bot.owner_id}")

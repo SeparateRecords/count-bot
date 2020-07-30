@@ -85,7 +85,8 @@ you can override:
 * `3.wav`
 * `2.wav`
 * `1.wav`
-* `0.wav`
+* `go.wav`
+* `pause.wav`
 
 All the audio files must be under 1 second in length. After 1 second, playback
 will be cut off and a warning will be logged, although it will continue

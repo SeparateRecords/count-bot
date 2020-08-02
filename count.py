@@ -8,6 +8,7 @@ import click
 import dotenv
 import discord
 import discord.ext.commands as commands
+from first import first
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,18 +22,18 @@ SEQUENCE = 5, 4, 3, 2, 1
 GO = "go.wav"
 PAUSE = "pause.wav"
 
+bot = commands.Bot(command_prefix=".")
+
 
 def get_audio(wav: str) -> discord.FFmpegPCMAudio:
     """Get the file named `name` from the user's custom files, or the default."""
-    path = CUSTOM / wav
+    paths = CUSTOM / wav, DEFAULT / wav
+    path = first(f for f in paths if f.exists())
 
-    if not path.exists():
-        path = DEFAULT / wav
+    if not path:
+        raise FileNotFoundError
 
     return discord.FFmpegPCMAudio(path)
-
-
-bot = commands.Bot(command_prefix=".")
 
 
 @bot.group(brief="Say 'Go' after 3 seconds.")

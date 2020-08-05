@@ -1,5 +1,5 @@
 # This file servers two purposes:
 # - Keep the directory in the repository.
-# - Ignore valid .wav files. (see: ../README.md#audio)
+# - Ignore .wav files. (see: ../README.md#audio)
 
-[543210].wav
+*.wav

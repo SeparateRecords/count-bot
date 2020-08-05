@@ -25,37 +25,30 @@ and the chat logs are messy. If you don't care, go for it!
 
 You must be in a voice channel the bot can join.
 
-To count down from 3, run this command.
+To count down from 3 and say "Go", run this command.
 
 ```
-count::go
+.go
 ```
 
-If you want to count from a number that _isn't_ 3, use the `go from` command.
-You can only use numbers between 0 and 5 (inclusive).
+If you want to count from a number that _isn't_ 3, use a number after the
+command. You can only use numbers between 1 and 5 (inclusive).
 
 ```
-count::go from 5
+.go 5
+```
+
+To say "Pause" instead of "Go", use `pause` instead of `go`. Simple!
+
+```
+.pause 2
 ```
 
 If you need to stop the bot, run this command (owner only).
 
 ```
-count::kill
+.kys
 ```
-
-<img width="450px" align="right" alt="Watch & discuss movies. Use &lt;@593717174732980224&gt; to count down. Commands: 'help'" src="https://user-images.githubusercontent.com/52195359/87511345-7fe1ad80-c6b8-11ea-87ba-1a5aac608f19.png">
-
-### Advanced
-
-If `count::` is too cumbersome, you can mention the bot instead. Alternatively,
-you can omit the prefix entirely if the channel topic mentions the bot.
-
-See an example channel topic on the right.
-
-<sup>[Read more on mention formatting.][format]</sup>
-
-[format]: https://discord.com/developers/docs/reference#message-formatting-formats
 
 ## Setup
 
@@ -92,11 +85,12 @@ you can override:
 * `3.wav`
 * `2.wav`
 * `1.wav`
-* `0.wav`
+* `go.wav`
+* `pause.wav`
 
-All the audio files must be under 1 second in length. After 1 second, playback
-will be cut off and a warning will be logged, although it will continue
-counting fine. The only exception to this is `0.wav` - it can be over 1 second.
+All the numbered audio files must be under 1 second in length. After 1 second,
+playback will be cut off and a warning will be logged, although it will
+continue counting perfectly.
 
 ## Contributions & License
 

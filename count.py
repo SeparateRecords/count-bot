@@ -31,7 +31,7 @@ def get_audio(wav: str) -> discord.FFmpegPCMAudio:
     path = first(f for f in paths if f.exists())
 
     if not path:
-        raise FileNotFoundError
+        raise FileNotFoundError(wav)
 
     return discord.FFmpegPCMAudio(path)
 
@@ -39,15 +39,13 @@ def get_audio(wav: str) -> discord.FFmpegPCMAudio:
 @bot.group(brief="Say 'Go' in your voice channel.")
 @commands.guild_only()
 async def go(ctx: commands.Context, seconds: int = 3):
-    if not ctx.subcommand_passed:
-        await countdown(ctx, seconds, on_zero=GO)
+    await countdown(ctx, seconds, on_zero=GO)
 
 
 @bot.group(aliases=["stop"], brief="Say 'Pause' in your voice channel.")
 @commands.guild_only()
 async def pause(ctx: commands.Context, seconds: int = 3):
-    if not ctx.subcommand_passed:
-        await countdown(ctx, seconds, on_zero=PAUSE)
+    await countdown(ctx, seconds, on_zero=PAUSE)
 
 
 async def countdown(ctx: commands.Context, seconds: int, *, on_zero: str):
@@ -56,11 +54,11 @@ async def countdown(ctx: commands.Context, seconds: int, *, on_zero: str):
         return await ctx.send("I'm already counting, please wait until I'm done!")
 
     if seconds not in SEQUENCE:
-        msg = f"Use a number between {max(SEQUENCE)} and {min(SEQUENCE)}."
+        msg = f"Use a number between {min(SEQUENCE)} and {max(SEQUENCE)}."
         return await ctx.send(msg)
 
     try:
-        vc: discord.VoiceClient = await ctx.author.voice.channel.connect()
+        vc = await ctx.author.voice.channel.connect()
     except (AttributeError, discord.ClientException):
         return await ctx.send("You must be in a voice channel I can join.")
 

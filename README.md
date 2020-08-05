@@ -88,9 +88,9 @@ you can override:
 * `go.wav`
 * `pause.wav`
 
-All the audio files must be under 1 second in length. After 1 second, playback
-will be cut off and a warning will be logged, although it will continue
-counting fine. The only exception to this is `0.wav` - it can be over 1 second.
+All the numbered audio files must be under 1 second in length. After 1 second,
+playback will be cut off and a warning will be logged, although it will
+continue counting perfectly.
 
 ## Contributions & License
 

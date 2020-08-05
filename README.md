@@ -25,23 +25,23 @@ and the chat logs are messy. If you don't care, go for it!
 
 You must be in a voice channel the bot can join.
 
-To count down from 3, run this command.
+To count down from 3 and say "Go", run this command.
 
 ```
 .go
 ```
 
-If you want to count from a number that _isn't_ 3, use the `go in` command.
-You can only use numbers between 0 and 5 (inclusive).
+If you want to count from a number that _isn't_ 3, use a number after the
+command. You can only use numbers between 1 and 5 (inclusive).
 
 ```
-.go in 5
+.go 5
 ```
 
-To say "Pause" instead of "Go", use `pause` instead of `go`.
+To say "Pause" instead of "Go", use `pause` instead of `go`. Simple!
 
 ```
-.pause in 2
+.pause 2
 ```
 
 If you need to stop the bot, run this command (owner only).

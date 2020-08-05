@@ -36,34 +36,18 @@ def get_audio(wav: str) -> discord.FFmpegPCMAudio:
     return discord.FFmpegPCMAudio(path)
 
 
-@bot.group(brief="Say 'Go' after 3 seconds.")
+@bot.group(brief="Say 'Go' in your voice channel.")
 @commands.guild_only()
-async def go(ctx: commands.Context):
-    """Count down from 3 in your voice channel. Alias for 'go in 3'"""
+async def go(ctx: commands.Context, seconds: int = 3):
     if not ctx.subcommand_passed:
-        await countdown(ctx, 3, on_zero=GO)
+        await countdown(ctx, seconds, on_zero=GO)
 
 
-@go.command(name="in", brief="Say 'Go' after a given number of seconds.")
+@bot.group(aliases=["stop"], brief="Say 'Pause' in your voice channel.")
 @commands.guild_only()
-async def go_in(ctx: commands.Context, seconds: int):
-    """Join your voice channel and say 'Go' after a given number of seconds."""
-    await countdown(ctx, seconds, on_zero=GO)
-
-
-@bot.group(aliases=["stop"], brief="Say 'Pause' after 3 seconds.")
-@commands.guild_only()
-async def pause(ctx: commands.Context):
-    """Count down from 3 in your voice channel. Alias for 'pause in 3'"""
+async def pause(ctx: commands.Context, seconds: int = 3):
     if not ctx.subcommand_passed:
-        await countdown(ctx, 3, on_zero=PAUSE)
-
-
-@pause.command(name="in", brief="Say 'Pause' after a given number of seconds.")
-@commands.guild_only()
-async def pause_in(ctx: commands.Context, seconds: int):
-    """Join your voice channel and say 'Pause' after a given number of seconds."""
-    await countdown(ctx, seconds, on_zero=PAUSE)
+        await countdown(ctx, seconds, on_zero=PAUSE)
 
 
 async def countdown(ctx: commands.Context, seconds: int, *, on_zero: str):

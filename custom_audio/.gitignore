@@ -1,5 +1,0 @@
-# This file servers two purposes:
-# - Keep the directory in the repository.
-# - Ignore .wav files. (see: ../README.md#audio)
-
-*.wav

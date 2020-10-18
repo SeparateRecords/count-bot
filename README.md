@@ -38,7 +38,7 @@ command. You can only use numbers between 1 and 5 (inclusive).
 .go 5
 ```
 
-To say "Pause" instead of "Go", use `pause` instead of `go`. Simple!
+To say "Pause" instead of "Go", use `.pause` instead of `.go`. Simple!
 
 ```
 .pause 2
@@ -52,7 +52,7 @@ If you need to stop the bot, run this command (owner only).
 
 ## Setup
 
-You'll need FFmpeg, Git, Python (minimum is 3.6), and **[Poetry]** to run this
+You'll need FFmpeg, Git, Python 3.8.* (specifically), and **[Poetry]** to run this
 bot. Some level of technical knowledge is expected. If you care enough to write
 a better tutorial, send a PR!
 
@@ -62,35 +62,17 @@ a better tutorial, send a PR!
 git clone https://github.com/SeparateRecords/count-bot
 cd count-bot
 poetry install
-poetry run bot --token "YOUR_BOT_TOKEN" --owner "YOUR_DISCORD_ID"
+poetry run count-bot --token "YOUR_BOT_TOKEN"
 ```
 
 Instead of the CLI, you can use environment variables to store your bot's
 credentials. Set the token with `COUNT_BOT_TOKEN` and the owner ID with
-`COUNT_BOT_OWNER`. These can be put in a `.env` file - copy `.example.env` to
+`COUNT_BOT_OWNERS`. These can be put in a `.env` file - copy `.example.env` to
 `.env` to get started.
 
 ```
 cp .example.env .env
 ```
-
-## Audio
-
-You can use the `custom_audio/` directory to override the sound files in
-`default_audio/` without replacing or changing them. Here are the file names
-you can override:
-
-* `5.wav`
-* `4.wav`
-* `3.wav`
-* `2.wav`
-* `1.wav`
-* `go.wav`
-* `pause.wav`
-
-All the numbered audio files must be under 1 second in length. After 1 second,
-playback will be cut off and a warning will be logged, although it will
-continue counting perfectly.
 
 ## Contributions & License
 

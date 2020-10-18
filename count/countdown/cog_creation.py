@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import io
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 import discord
 import discord.ext.commands as commands

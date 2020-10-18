@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from loguru import logger
+from typing import TYPE_CHECKING, Dict, Tuple
+
 from pydub import AudioSegment
-from typing import Dict, TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
     from count.countdown.assets import AllAssets
@@ -63,7 +63,7 @@ class CountAudio:
         normalized = audio.set_frame_rate(48000).set_sample_width(2)
         pcm_audio = normalized.raw_data
 
-        if seconds < CountAudio.MAX_SECONDS_TO_CACHE:
+        if seconds <= CountAudio.MAX_SECONDS_TO_CACHE:
             self._cache[cache_key] = pcm_audio  # type: ignore
 
         return pcm_audio  # type: ignore

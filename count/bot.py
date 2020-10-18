@@ -1,12 +1,7 @@
-"""
-This file is only used to separate the bot definition from any
-information required at runtime. Any and all useful information is in
-__init__.py.
-"""
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Awaitable, Set
+from typing import TYPE_CHECKING, Set
 
 import discord
 import discord.ext.commands as commands

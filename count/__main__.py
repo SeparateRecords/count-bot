@@ -1,4 +1,4 @@
-"""Entrypoint for running the CLI."""
+from __future__ import annotations
 
 # fmt: off
 __import__("dotenv").load_dotenv()

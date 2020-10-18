@@ -74,6 +74,9 @@ credentials. Set the token with `COUNT_BOT_TOKEN` and the owner ID with
 cp .example.env .env
 ```
 
+If you still feel icky about storing your token in a .env file, you'll be
+prompted for a token if you run the bot without specifying one.
+
 ## Contributions & License
 
 Any other long-distance couples with at least one nerd dedicated enough to run

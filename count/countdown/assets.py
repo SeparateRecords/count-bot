@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from configparser import ConfigParser
 from pathlib import Path
-from string import Template, ascii_letters
+from string import Template, whitespace
 from typing import Dict, Mapping
 
 from pydub import AudioSegment
@@ -11,18 +11,16 @@ from pydub import AudioSegment
 CommandAssets = Dict[int, AudioSegment]
 AllAssets = Dict[str, CommandAssets]
 
-COMMAND_NAME_CHARS = ascii_letters + "_-/."
-
 
 def config_to_assets(config_path: Path) -> AllAssets:
     """Create an assets dictionary from an INI file at the given path."""
     config_path = config_path.expanduser().resolve()
 
     if not config_path.exists():
-        raise FileNotFoundError(str(config_path))
+        raise FileNotFoundError(config_path)
 
     if not config_path.is_file():
-        raise IsADirectoryError(str(config_path))
+        raise IsADirectoryError(config_path)
 
     # Required because paths in config files are relative to the config
     # file's directory, not the current working directory.
@@ -37,8 +35,8 @@ def config_to_assets(config_path: Path) -> AllAssets:
         if section_name == "DEFAULT":
             continue
 
-        if not all(char in COMMAND_NAME_CHARS for char in section_name):
-            raise KeyError(f"Command names may only contain {COMMAND_NAME_CHARS}")
+        if any(char in whitespace for char in section_name):
+            raise KeyError(f"Command names may not contain whitespace.")
 
         assets = create_command_assets(section_data, relative_path_root)
         commands[section_name] = assets
@@ -74,7 +72,7 @@ def key_to_number(key: str) -> int:
 
 
 def path_to_audio(path: str, relative_path_root: Path) -> AudioSegment:
-    """Perform transformations on the path and create an AudioSegment."""
+    """Perform transformations on the path to create an AudioSegment."""
 
     try:
         substituted = Template(path).substitute(os.environ)
@@ -89,10 +87,10 @@ def path_to_audio(path: str, relative_path_root: Path) -> AudioSegment:
         audio_file = relative_path_root / asset_path
 
     if not audio_file.exists():
-        raise FileNotFoundError(str(audio_file))
+        raise FileNotFoundError(audio_file)
 
     if not audio_file.is_file():
-        raise IsADirectoryError(str(audio_file))
+        raise IsADirectoryError(audio_file)
 
     segment = AudioSegment.from_file(audio_file)
     return segment

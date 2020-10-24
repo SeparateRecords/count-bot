@@ -15,7 +15,7 @@ class ShowFailureInChat(commands.CommandError):
         super().__init__(str(message))
 
     def __str__(self):
-        return f"**Error:** {str(super())}"
+        return f"**Error:** {super().__str__()}"
 
 
 def fail(

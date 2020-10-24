@@ -44,7 +44,7 @@ class AudioManager(commands.Cog, name="Audio"):
 
     @commands.command()
     @commands.is_owner()
-    async def reload_audio(self, ctx: commands.Context):
+    async def reload_config(self, ctx: commands.Context):
         try:
             self.add_commands_to_bot()
         except Exception as e:

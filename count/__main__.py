@@ -143,7 +143,7 @@ def cli(
         enqueue=True,
     )
 
-    bot = new_bot(prefix, set(owners), config)
+    bot = new_bot(prefix, owners, config)
     bot.run(token)
 
 

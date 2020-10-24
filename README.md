@@ -31,7 +31,7 @@ To count down from 3 and say "Go", run this command.
 .go
 ```
 
-If you want to count from a number that _isn't_ 3, use a number after the
+If you want to count from a number that *isn't* 3, use a number after the
 command. You can only use numbers between 1 and 5 (inclusive).
 
 ```
@@ -72,6 +72,8 @@ poetry run count-bot --token "YOUR_BOT_TOKEN"
 
 Instead of the CLI, you can use environment variables to store your bot's
 credentials. See the [.example.env] file for all the allowed values.
+
+[.example.env]: .example.env
 
 ```
 cp .example.env .env

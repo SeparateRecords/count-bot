@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Set
+from typing import TYPE_CHECKING, Collection
 
 import discord
 import discord.ext.commands as commands
@@ -67,7 +67,7 @@ async def log_commands(ctx: commands.Context) -> None:
     logger.info(msg)
 
 
-def new_bot(prefix: str, owners: Set[int], config: Path) -> Bot:
+def new_bot(prefix: str, owners: Collection[int], config: Path) -> Bot:
 
     # --- Create the bot ---
 
@@ -79,7 +79,7 @@ def new_bot(prefix: str, owners: Set[int], config: Path) -> Bot:
         case_insensitive=True,
         description="Counts down for you, so you have an easier time staying in sync.",
         intents=intents,
-        owner_ids=owners,
+        owner_ids=set(owners),
     )
     bot.before_invoke(log_commands)
 

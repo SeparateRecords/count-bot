@@ -52,11 +52,16 @@ If you need to stop the bot, run this command (owner only).
 
 ## Setup
 
-You'll need FFmpeg, Git, Python 3.8.* (specifically), and **[Poetry]** to run this
-bot. Some level of technical knowledge is expected. If you care enough to write
-a better tutorial, send a PR!
+You'll need FFmpeg, Git, Python, and **[Poetry]** to run this bot. Some level
+of technical knowledge is expected. If you care enough to write a better
+tutorial, send a PR!
+
+There are no PyNaCL wheels for Python 3.9, as of writing (2020-10-24).
+You can either compile libsodium yourself, or use Python 3.8
+([see: `poetry env use`][env]).
 
 [Poetry]: https://python-poetry.org/docs/#installation
+[env]: https://python-poetry.org/docs/managing-environments/#switching-between-environments
 
 ```
 git clone https://github.com/SeparateRecords/count-bot
@@ -66,9 +71,7 @@ poetry run count-bot --token "YOUR_BOT_TOKEN"
 ```
 
 Instead of the CLI, you can use environment variables to store your bot's
-credentials. Set the token with `COUNT_BOT_TOKEN` and the owner ID with
-`COUNT_BOT_OWNERS`. These can be put in a `.env` file - copy `.example.env` to
-`.env` to get started.
+credentials. See the [.example.env] file for all the allowed values.
 
 ```
 cp .example.env .env

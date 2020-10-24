@@ -5,11 +5,11 @@ from pathlib import Path
 import discord.ext.commands as commands
 
 from count.countdown.assets import config_to_assets
-from count.countdown.cog_creation import COG_NAME, create_commands_cog
+from count.countdown.dynamic_cog import COG_NAME, create_cog
 from count.errors import fail
 
 
-class CountdownManagement(commands.Cog, name="Countdown Management"):
+class AudioManager(commands.Cog, name="Audio"):
     """Manage the dynamically generated commands for counting."""
 
     def __init__(
@@ -39,12 +39,12 @@ class CountdownManagement(commands.Cog, name="Countdown Management"):
     def create_cog(self):
         """Creates the cog from the stored config."""
         assets = config_to_assets(self.config_path)
-        cog = create_commands_cog(assets)
+        cog = create_cog(assets)
         return cog
 
-    @commands.command(name="reload-count-commands")
+    @commands.command()
     @commands.is_owner()
-    async def reload_count_commands(self, ctx: commands.Context):
+    async def reload_audio(self, ctx: commands.Context):
         try:
             self.add_commands_to_bot()
         except Exception as e:

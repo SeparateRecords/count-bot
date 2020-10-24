@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import io
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import discord
 import discord.ext.commands as commands
 from loguru import logger
 
-from count.countdown.audio import CountAudio
+from count.countdown.audio_creator import AudioCreator
 from count.errors import fail
 
 if TYPE_CHECKING:
@@ -17,9 +17,9 @@ if TYPE_CHECKING:
 COG_NAME = "Play"
 
 
-def create_commands_cog(all_assets: AllAssets) -> commands.Cog:
+def create_cog(all_assets: AllAssets) -> commands.Cog:
     """Generate a new cog containing commands that play audio."""
-    audio = CountAudio(all_assets)
+    audio = AudioCreator(all_assets)
 
     cog_dict = {}
     for command_name, data in all_assets.items():
@@ -34,13 +34,13 @@ def create_commands_cog(all_assets: AllAssets) -> commands.Cog:
 
 def create_cog_command(
     command_name: str,
-    count_audio: CountAudio,
+    audio_creator: AudioCreator,
     max_countdown: int,
 ) -> commands.Command:
     """Get a command that plays audio.
 
     The first argument of the command is unused because when cogs are
-    created the commands have `self` injected as the first positional
+    created each command has `self` injected as the first positional
     argument.
 
     Command objects returned by this function are basically shims for
@@ -55,7 +55,7 @@ def create_cog_command(
             ctx,
             seconds,
             command_name,
-            count_audio,
+            audio_creator,
             max_countdown,
         )
 
@@ -66,7 +66,7 @@ async def play_audio(
     ctx: commands.Context,
     seconds: int,
     command_name: str,
-    count_audio: CountAudio,
+    audio_creator: AudioCreator,
     max_countdown: int,
 ) -> None:
     """Play audio in the message author's voice channel."""
@@ -74,12 +74,13 @@ async def play_audio(
         logger.error(f"Number to count from was greater than the maximum allowed.")
         fail(f"Too long, use a number under {max_countdown}.")
 
-    if ctx.voice_client is not None:
-        logger.error(f"Voice client already exists for guild: {ctx.guild.id}.")
+    if ctx.voice_client:
+        logger.error(f"Voice client already exists for guild: {ctx.guild!r}.")
         fail("Already counting in your server.")
 
     try:
         vc = await ctx.author.voice.channel.connect()  # type: ignore
+        vc = cast(discord.VoiceClient, vc)
     except AttributeError:
         logger.error(f"User not in a voice channel: {ctx.author.id}")
         fail("You must be in a voice channel.")
@@ -88,7 +89,7 @@ async def play_audio(
         fail("Failed to connect to your voice channel.", cause=e)
 
     try:
-        audio_bytes = count_audio.new(seconds, command_name)
+        audio_bytes = audio_creator.new(seconds, command_name)
     except KeyError as e:
         fail("Something has gone terribly wrong (unable to play)", cause=e)
 

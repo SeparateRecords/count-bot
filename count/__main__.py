@@ -5,7 +5,6 @@ __import__("dotenv").load_dotenv()
 # fmt: on
 
 import logging
-import os
 import sys
 from pathlib import Path
 from typing import Sequence
@@ -94,10 +93,23 @@ class PathPath(click.Path):
 )
 @click.option(
     "--log-level",
-    help="Log level of the bot. This does not affect discord.py (set to ERROR)",
+    help="Log level of the bot.",
     metavar="<level>",
     envvar="COUNT_BOT_LOG_LEVEL",
     default="INFO",
+    show_default=True,
+    type=click.Choice(
+        ["TRACE", "DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"],
+        case_sensitive=False,
+    ),
+)
+@click.option(
+    "--dpy-log-level",
+    help="Log level of discord.py.",
+    metavar="<level>",
+    envvar="COUNT_BOT_DISCORD_LOG_LEVEL",
+    default="ERROR",
+    show_default=True,
     type=click.Choice(
         ["TRACE", "DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"],
         case_sensitive=False,
@@ -109,6 +121,7 @@ def cli(
     config: Path,
     prefix: str,
     log_level: str,
+    dpy_log_level: str,
 ):
     """
     Run the bot using constants provided through environment variables
@@ -116,16 +129,15 @@ def cli(
 
     Once the bot is running, these values will not change.
     """
-
     logger.remove()
     logger.add(
         sys.stderr,
         filter="discord",
-        level=os.getenv("LOGURU_LEVEL", "ERROR"),
+        level=dpy_log_level,
         enqueue=True,
     )
     logger.add(
-        sys.stderr,
+        sys.stdout,
         filter="count",
         level=log_level.upper(),
         enqueue=True,

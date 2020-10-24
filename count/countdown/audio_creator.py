@@ -8,10 +8,8 @@ if TYPE_CHECKING:
     from count.countdown.assets import AllAssets
 
 
-class CountAudio:
+class AudioCreator:
     """Create audio that never stutters by dynamically combining files."""
-
-    MAX_SECONDS_TO_CACHE = 5
 
     def __init__(self, assets: AllAssets) -> None:
         # Using a cache to avoid the potentially expensive duplicate
@@ -53,17 +51,17 @@ class CountAudio:
             sound = command_assets.get(i)
             if not sound:
                 continue
-            ms = (seconds - i) * 1000
-            audio = audio.overlay(sound, position=ms)
+            position_ms = (seconds - i) * 1000
+            audio = audio.overlay(sound, position=position_ms)
 
-        # discord.py expects 48kHz, 16-bit (2 byte) audio for normal
-        # playback. The audio frame rate is already set to 48kHz, but
-        # pydub will increase it if there's any higher quality audio.
-        # >48000 plays back too slow, <48000 plays back too fast.
-        normalized = audio.set_frame_rate(48000).set_sample_width(2)
-        pcm_audio = normalized.raw_data
+        # discord.py expects stereo, 48kHz, 16-bit (2 byte) audio for
+        # normal playback. The audio frame rate is already set to 48kHz,
+        # but pydub will increase it if there's a single segment higher.
+        # <48000 plays back too fast, >48000 plays back too slow.
+        normal = audio.set_frame_rate(48000).set_sample_width(2).set_channels(2)
 
-        if seconds <= CountAudio.MAX_SECONDS_TO_CACHE:
-            self._cache[cache_key] = pcm_audio  # type: ignore
+        pcm_audio = normal.raw_data
+
+        self._cache[cache_key] = pcm_audio  # type: ignore
 
         return pcm_audio  # type: ignore

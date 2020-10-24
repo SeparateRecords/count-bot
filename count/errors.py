@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import NoReturn, Optional, Type
 
-import discord
 import discord.ext.commands as commands
 
 
@@ -15,8 +14,8 @@ class ShowFailureInChat(commands.CommandError):
     def __init__(self, message: object):
         super().__init__(str(message))
 
-    def embed(self):
-        return discord.Embed(description=f"**Error:** {self}", color=0xE94545)
+    def __str__(self):
+        return f"**Error:** {str(super())}"
 
 
 def fail(

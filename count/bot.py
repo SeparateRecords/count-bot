@@ -7,7 +7,7 @@ import discord
 import discord.ext.commands as commands
 from loguru import logger
 
-from count.countdown import CountdownManagement
+from count.countdown import AudioManager
 from count.errors import ShowFailureInChat
 
 if TYPE_CHECKING:
@@ -32,7 +32,7 @@ class Bot(commands.Bot):
         exception: Exception,
     ) -> None:
         if isinstance(exception, ShowFailureInChat):
-            await ctx.send(embed=exception.embed())
+            await ctx.send(exception)
             # The cause should be raised as its own error, ShowFailure
             # just wraps it to show some useful information to the user.
             if exception.__cause__:
@@ -43,7 +43,7 @@ class Bot(commands.Bot):
         raise exception
 
 
-class OwnerCommands(commands.Cog, name="Owner-only commands"):
+class BotControl(commands.Cog, name="Control"):
     async def cog_check(self, ctx: commands.Context) -> bool:
         return await ctx.bot.is_owner(ctx.author)
 
@@ -55,12 +55,12 @@ class OwnerCommands(commands.Cog, name="Owner-only commands"):
 
 
 async def log_commands(ctx: commands.Context) -> None:
-    msg = f"{ctx.author} invoked '{ctx.message.content}' at {ctx.message.created_at}"
+    msg = f"{ctx.author} invoked '{ctx.message.content}'"
 
     if ctx.guild:
         guild = ctx.guild
         channel = ctx.channel
-        msg += f" in #{channel} ({channel.id}) of '{guild}' ({guild.id})"
+        msg += f" in '{guild}' ({guild.id}), #{channel} ({channel.id})"
     else:
         msg += f" in a DM"
 
@@ -72,23 +72,24 @@ def new_bot(prefix: str, owners: Set[int], config: Path) -> Bot:
     # --- Create the bot ---
 
     intents = discord.Intents.default()
+    # the member cache is extremely flaky without the 'members' intent.
     intents.members = True
     bot = Bot(
         command_prefix=prefix,
         case_insensitive=True,
         description="Counts down for you, so you have an easier time staying in sync.",
         intents=intents,
+        owner_ids=owners,
     )
-    bot.owner_ids = owners
     bot.before_invoke(log_commands)
 
-    # --- Create the countdown commands ---
+    # --- Create the commands ---
 
-    countdown = CountdownManagement(bot, config)
+    countdown = AudioManager(bot, config)
     bot.add_cog(countdown)
 
     # --- Add commands for bot control ---
 
-    bot.add_cog(OwnerCommands())
+    bot.add_cog(BotControl())
 
     return bot

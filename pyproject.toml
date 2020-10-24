@@ -4,10 +4,10 @@ description = "Discord bot for keeping people in sync by counting you in."
 license = "ISC"
 name = "count"
 readme = "README.md"
-version = "2.0.0"
+version = "2.1.0"
 
 [tool.poetry.dependencies]
-python = "~3.8"  # PyNaCl has no wheels for Python 3.9 at the moment (2020-10-19)
+python = "^3.8"
 "discord.py" = { version = "^1.5.0", extras = [ "voice" ] }
 click = "^7.1.2"
 loguru = "^0.5.3"
@@ -24,4 +24,5 @@ better-exceptions = "^0.2.2"
 count-bot = "count.__main__:cli"
 
 [build-system]
-requires = [ "poetry>=0.12" ]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

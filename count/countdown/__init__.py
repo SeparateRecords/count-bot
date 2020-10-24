@@ -1,3 +1,3 @@
-__all__ = ("CountdownManagement",)
+__all__ = ("AudioManager",)
 
-from count.countdown.countdown import CountdownManagement
+from count.countdown.management_cog import AudioManager

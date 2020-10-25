@@ -7,7 +7,7 @@ import discord
 import discord.ext.commands as commands
 from loguru import logger
 
-from count.countdown import AudioManager
+from count.play import AudioManager
 from count.errors import ShowFailureInChat
 
 if TYPE_CHECKING:
@@ -40,7 +40,7 @@ class Bot(commands.Bot):
             return
 
         # If there's no specific handling, the error should not be silent.
-        raise exception
+        logger.opt(exception=exception).error("Ruh roh!")
 
 
 class BotControl(commands.Cog, name="Control"):
@@ -55,7 +55,7 @@ class BotControl(commands.Cog, name="Control"):
 
 
 async def log_commands(ctx: commands.Context) -> None:
-    msg = f"{ctx.author} invoked '{ctx.message.content}'"
+    msg = f"{ctx.author} sent '{ctx.message.content}'"
 
     if ctx.guild:
         guild = ctx.guild
@@ -68,11 +68,10 @@ async def log_commands(ctx: commands.Context) -> None:
 
 
 def new_bot(prefix: str, owners: Collection[int], config: Path) -> Bot:
+    """Create a new bot instance with cogs loaded."""
 
-    # --- Create the bot ---
-
-    intents = discord.Intents.default()
     # the member cache is extremely flaky without the 'members' intent.
+    intents = discord.Intents.default()
     intents.members = True
     bot = Bot(
         command_prefix=prefix,
@@ -83,12 +82,8 @@ def new_bot(prefix: str, owners: Collection[int], config: Path) -> Bot:
     )
     bot.before_invoke(log_commands)
 
-    # --- Create the commands ---
-
-    countdown = AudioManager(bot, config)
-    bot.add_cog(countdown)
-
-    # --- Add commands for bot control ---
+    audio = AudioManager(bot, config)
+    bot.add_cog(audio)
 
     bot.add_cog(BotControl())
 

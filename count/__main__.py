@@ -133,13 +133,15 @@ def cli(
     logger.add(
         sys.stderr,
         filter="discord",
-        level=dpy_log_level,
+        level=dpy_log_level.upper(),
         enqueue=True,
     )
     logger.add(
-        sys.stdout,
+        sys.stderr,
         filter="count",
         level=log_level.upper(),
+        backtrace=True,
+        diagnose=True,
         enqueue=True,
     )
 

@@ -8,11 +8,11 @@ import discord
 import discord.ext.commands as commands
 from loguru import logger
 
-from count.countdown.audio_creator import AudioCreator
+from count.play.audio_creator import AudioCreator
 from count.errors import fail
 
 if TYPE_CHECKING:
-    from count.countdown.assets import AllAssets
+    from count.play.assets import AllAssets
 
 COG_NAME = "Play"
 

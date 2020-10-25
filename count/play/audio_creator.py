@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Dict, Tuple
 from pydub import AudioSegment
 
 if TYPE_CHECKING:
-    from count.countdown.assets import AllAssets
+    from count.play.assets import AllAssets
 
 
 class AudioCreator:

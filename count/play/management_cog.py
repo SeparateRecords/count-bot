@@ -4,8 +4,8 @@ from pathlib import Path
 
 import discord.ext.commands as commands
 
-from count.countdown.assets import config_to_assets
-from count.countdown.dynamic_cog import COG_NAME, create_cog
+from count.play.assets import config_to_assets
+from count.play.dynamic_cog import COG_NAME, create_cog
 from count.errors import fail
 
 

@@ -67,19 +67,20 @@ async def log_commands(ctx: commands.Context) -> None:
     logger.info(msg)
 
 
+@logger.catch
 def new_bot(prefix: str, owners: Collection[int], config: Path) -> Bot:
     """Create a new bot instance with cogs loaded."""
 
     # the member cache is extremely flaky without the 'members' intent.
-    intents = discord.Intents.default()
-    intents.members = True
     bot = Bot(
         command_prefix=prefix,
         case_insensitive=True,
-        description="Counts down for you, so you have an easier time staying in sync.",
-        intents=intents,
         owner_ids=set(owners),
+        description="Counts down for you, so you have an easier time staying in sync.",
+        intents=discord.Intents(**dict(discord.Intents.default(), members=True)),
+        help_command=commands.DefaultHelpCommand(no_category="Bot"),
     )
+
     bot.before_invoke(log_commands)
 
     audio = AudioManager(bot, config)

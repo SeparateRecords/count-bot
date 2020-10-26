@@ -100,7 +100,7 @@ class PathPath(click.Path):
     show_default=True,
     type=click.Choice(
         ["TRACE", "DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"],
-        case_sensitive=False,
+        case_sensitive=True,
     ),
 )
 @click.option(
@@ -112,7 +112,7 @@ class PathPath(click.Path):
     show_default=True,
     type=click.Choice(
         ["TRACE", "DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"],
-        case_sensitive=False,
+        case_sensitive=True,
     ),
 )
 def cli(
@@ -133,15 +133,16 @@ def cli(
     logger.add(
         sys.stderr,
         filter="discord",
-        level=dpy_log_level.upper(),
+        level=dpy_log_level,
         enqueue=True,
     )
+    show_debug_info = logger.level(log_level).no < logger.level("INFO").no
     logger.add(
         sys.stderr,
         filter="count",
-        level=log_level.upper(),
-        backtrace=True,
-        diagnose=True,
+        level=log_level,
+        backtrace=show_debug_info,
+        diagnose=show_debug_info,
         enqueue=True,
     )
 

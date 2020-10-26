@@ -5,21 +5,23 @@ from typing import TYPE_CHECKING, Dict, Tuple
 from pydub import AudioSegment
 
 if TYPE_CHECKING:
-    from count.play.assets import AllAssets
+    from count.play.assets import PlayCogCommandStructure
 
 
 class AudioCreator:
     """Create audio that never stutters by dynamically combining files."""
 
-    def __init__(self, assets: AllAssets) -> None:
+    def __init__(self, assets: PlayCogCommandStructure) -> None:
         # Using a cache to avoid the potentially expensive duplicate
         # work. The only way the cache can become invalid is if the
         # data source gets mutated. Deep-copying the data ensures
         # there's no references to it, so the cache is always valid.
-        self._assets: AllAssets = {key: {**values} for key, values in assets.items()}
+        self._assets: PlayCogCommandStructure = {
+            key: {**values} for key, values in assets.items()
+        }
         self._cache: Dict[Tuple[int, str], bytes] = {}
 
-    def update(self, new_assets: AllAssets) -> None:
+    def update(self, new_assets: PlayCogCommandStructure) -> None:
         """Replace the old audio assets with new audio assets."""
         self._cache.clear()
         self._assets = new_assets

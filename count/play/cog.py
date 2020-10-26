@@ -2,29 +2,75 @@ from __future__ import annotations
 
 import asyncio
 import io
+from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 import discord
 import discord.ext.commands as commands
 from loguru import logger
 
-from count.play.audio_creator import AudioCreator
 from count.errors import fail
+from count.play.assets import config_to_assets
+from count.play.audio_creator import AudioCreator
 
 if TYPE_CHECKING:
-    from count.play.assets import AllAssets
+    from count.play.assets import PlayCogCommandStructure
 
 COG_NAME = "Play"
 
 
-def create_cog(all_assets: AllAssets) -> commands.Cog:
+class AudioManager(commands.Cog, name="Audio"):
+    """Manage the dynamically generated commands for counting."""
+
+    def __init__(
+        self,
+        bot: commands.Bot,
+        config_path: Path,
+    ) -> None:
+        self.bot = bot
+        self.config_path = config_path
+        self.add_commands_to_bot()
+
+    def cog_unload(self):
+        """Removes the generated cog when this cog is unloaded."""
+        self.bot.remove_cog(COG_NAME)
+
+    def add_commands_to_bot(self):
+        """Generates the cog and registers it to the bot.
+
+        If the cog is already loaded, it will be unloaded first.
+        """
+        # This goes first so that if it fails (for some reason)
+        # then nothing will be changed.
+        cog = self.create_cog()
+        self.bot.remove_cog(COG_NAME)
+        self.bot.add_cog(cog)
+
+    def create_cog(self):
+        """Creates the cog from the stored config."""
+        assets = config_to_assets(self.config_path)
+        cog = create_play_cog(assets)
+        return cog
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def reload_config(self, ctx: commands.Context):
+        try:
+            self.add_commands_to_bot()
+        except Exception as e:
+            fail("Unable to reload the commands.", cause=e)
+        else:
+            await ctx.message.add_reaction("✅")
+
+
+def create_play_cog(all_assets: PlayCogCommandStructure) -> commands.Cog:
     """Generate a new cog containing commands that play audio."""
     audio = AudioCreator(all_assets)
 
     cog_dict = {}
     for command_name, data in all_assets.items():
         max_countdown = max(data.keys())
-        command = create_cog_command(command_name, audio, max_countdown)
+        command = create_play_cog_command(command_name, audio, max_countdown)
         cog_dict[command_name] = command
 
     NewCog = type(COG_NAME, (commands.Cog,), cog_dict)
@@ -32,7 +78,7 @@ def create_cog(all_assets: AllAssets) -> commands.Cog:
     return cog
 
 
-def create_cog_command(
+def create_play_cog_command(
     command_name: str,
     audio_creator: AudioCreator,
     max_countdown: int,

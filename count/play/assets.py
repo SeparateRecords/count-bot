@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from configparser import ConfigParser
+from functools import lru_cache
 from pathlib import Path
 from string import Template, whitespace
 from typing import Dict, Mapping
@@ -9,10 +10,10 @@ from typing import Dict, Mapping
 from pydub import AudioSegment
 
 CommandAssets = Dict[int, AudioSegment]
-AllAssets = Dict[str, CommandAssets]
+PlayCogCommandStructure = Dict[str, CommandAssets]
 
 
-def config_to_assets(config_path: Path) -> AllAssets:
+def config_to_assets(config_path: Path) -> PlayCogCommandStructure:
     """Create an assets dictionary from an INI file at the given path."""
     config_path = config_path.expanduser().resolve()
 
@@ -29,7 +30,7 @@ def config_to_assets(config_path: Path) -> AllAssets:
     c = ConfigParser()
     c.read(config_path)
 
-    commands: AllAssets = {}
+    commands: PlayCogCommandStructure = {}
 
     for section_name, section_data in c.items():
         if section_name == "DEFAULT":
@@ -71,6 +72,7 @@ def key_to_number(key: str) -> int:
     return number
 
 
+@lru_cache(maxsize=None)
 def path_to_audio(path: str, relative_path_root: Path) -> AudioSegment:
     """Perform transformations on the path to create an AudioSegment."""
 

@@ -7,7 +7,8 @@ import discord
 import discord.ext.commands as commands
 from loguru import logger
 
-from count.play import AudioManager
+from count import config
+from count.common import ConfigKey
 from count.errors import ShowFailureInChat
 
 if TYPE_CHECKING:
@@ -15,46 +16,40 @@ if TYPE_CHECKING:
 
 
 class Bot(commands.Bot):
-    async def close(self):
+    async def close(self) -> None:
         await asyncio.gather(
             *[vc.disconnect(force=True) for vc in self.voice_clients],
             self.change_presence(status=discord.Status.offline),
         )
-        await asyncio.sleep(1)
         await super().close()
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         logger.info("Bot is ready.")
 
     async def on_command_error(
         self,
         ctx: commands.Context,
-        exception: Exception,
+        exception: BaseException,
     ) -> None:
         if isinstance(exception, ShowFailureInChat):
             await ctx.send(exception)
             # The cause should be raised as its own error, ShowFailure
             # just wraps it to show some useful information to the user.
-            if exception.__cause__:
-                raise exception.__cause__
+            if not exception.__cause__:
+                return
+
+            # Not returning, this will be logged.
+            exception = exception.__cause__
+
+        elif isinstance(exception, commands.MissingRequiredArgument):
+            await ctx.send_help(ctx.invoked_subcommand)
             return
 
         # If there's no specific handling, the error should not be silent.
-        logger.opt(exception=exception).error("Ruh roh!")
+        logger.opt(exception=exception).error("Something has gone terribly wrong.")
 
 
-class BotControl(commands.Cog, name="Control"):
-    async def cog_check(self, ctx: commands.Context) -> bool:
-        return await ctx.bot.is_owner(ctx.author)
-
-    @commands.command()
-    async def kys(self, ctx: commands.Context) -> None:
-        await ctx.message.add_reaction("💀")
-        await ctx.bot.logout()
-        logger.success("Bot has been closed.")
-
-
-async def log_commands(ctx: commands.Context) -> None:
+async def log_command_usage(ctx: commands.Context) -> None:
     msg = f"{ctx.author} sent '{ctx.message.content}'"
 
     if ctx.guild:
@@ -68,7 +63,7 @@ async def log_commands(ctx: commands.Context) -> None:
 
 
 @logger.catch
-def new_bot(prefix: str, owners: Collection[int], config: Path) -> Bot:
+def new_bot(prefix: str, owners: Collection[int], audio_config_path: Path) -> Bot:
     """Create a new bot instance with cogs loaded."""
 
     # the member cache is extremely flaky without the 'members' intent.
@@ -78,14 +73,16 @@ def new_bot(prefix: str, owners: Collection[int], config: Path) -> Bot:
         owner_ids=set(owners),
         description="Counts down for you, so you have an easier time staying in sync.",
         intents=discord.Intents(**dict(discord.Intents.default(), members=True)),
-        help_command=commands.DefaultHelpCommand(no_category="Bot"),
     )
 
-    bot.before_invoke(log_commands)
+    bot.before_invoke(log_command_usage)
 
-    audio = AudioManager(bot, config)
-    bot.add_cog(audio)
+    initial_config = {
+        ConfigKey.AUDIO_CONFIG_PATH: audio_config_path,
+    }
+    config.install(bot, initial_config)
 
-    bot.add_cog(BotControl())
+    bot.load_extension("count.core")
+    bot.load_extension("count.play")
 
     return bot

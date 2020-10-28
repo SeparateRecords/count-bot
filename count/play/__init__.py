@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import cast
 
 from discord.ext import commands
 
 from count import config
 from count.common import ConfigKey
-from count.play.assets import config_to_assets
+from count.play.audio import config_to_assets
 from count.play.cog import create_play_cog
 
 COG_NAME = "Play"

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import asyncio
-from typing import TYPE_CHECKING, Collection
+from typing import TYPE_CHECKING, Any, Collection
 
 import discord
 import discord.ext.commands as commands
@@ -16,46 +15,50 @@ if TYPE_CHECKING:
 
 
 class Bot(commands.Bot):
-    async def close(self) -> None:
-        await asyncio.gather(
-            *[vc.disconnect(force=True) for vc in self.voice_clients],
-            self.change_presence(status=discord.Status.offline),
-        )
-        await super().close()
-
     async def on_ready(self) -> None:
         logger.info("Bot is ready.")
+
+    async def on_error(self, event_method: str, *args: Any, **kwargs: Any) -> None:
+        logger.exception(f"Ignoring exception in '{event_method}':")
 
     async def on_command_error(
         self,
         ctx: commands.Context,
         exception: BaseException,
     ) -> None:
+        # ShowFailureInChat will send a message to a context, optionally
+        # wrapping another error which should be handled separately.
         if isinstance(exception, ShowFailureInChat):
             await ctx.send(exception)
-            # The cause should be raised as its own error, ShowFailure
-            # just wraps it to show some useful information to the user.
+
+            # Was just used to send a message, don't log anything.
             if not exception.__cause__:
                 return
 
-            # Not returning, this will be logged.
             exception = exception.__cause__
 
-        elif isinstance(exception, commands.MissingRequiredArgument):
-            await ctx.send_help(ctx.invoked_subcommand)
+            # If it wasn't wrapping a CommandError, log it and return.
+            if not isinstance(exception, commands.CommandError):
+                logger.opt(exception=exception).error("fail() wrapped")
+                return
+
+        if isinstance(exception, commands.MissingRequiredArgument):
+            # try to be as specific as possible
+            await ctx.send_help(ctx.invoked_subcommand or ctx.command)
+            return
+
+        elif isinstance(exception, commands.CommandNotFound):
             return
 
         # If there's no specific handling, the error should not be silent.
-        logger.opt(exception=exception).error("Something has gone terribly wrong.")
+        logger.opt(exception=exception).error("Ignoring CommandError:")
 
 
 async def log_command_usage(ctx: commands.Context) -> None:
     msg = f"{ctx.author} sent '{ctx.message.content}'"
 
     if ctx.guild:
-        guild = ctx.guild
-        channel = ctx.channel
-        msg += f" in '{guild}' ({guild.id}), #{channel} ({channel.id})"
+        msg += f" in '{ctx.guild}' #{ctx.channel}"
     else:
         msg += f" in a DM"
 
@@ -72,7 +75,9 @@ def new_bot(prefix: str, owners: Collection[int], audio_config_path: Path) -> Bo
         case_insensitive=True,
         owner_ids=set(owners),
         description="Counts down for you, so you have an easier time staying in sync.",
-        intents=discord.Intents(**dict(discord.Intents.default(), members=True)),
+        intents=discord.Intents(
+            **dict(discord.Intents.default(), members=True, presences=True)
+        ),
     )
 
     bot.before_invoke(log_command_usage)

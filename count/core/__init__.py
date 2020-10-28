@@ -3,7 +3,6 @@ from __future__ import annotations
 import discord.ext.commands as commands
 
 from count.core.cog import CoreCommands
-from count.common import cog_name
 
 
 def setup(bot: commands.Bot) -> None:
@@ -11,4 +10,4 @@ def setup(bot: commands.Bot) -> None:
 
 
 def teardown(bot: commands.Bot) -> None:
-    bot.remove_cog(cog_name(CoreCommands))
+    bot.remove_cog(CoreCommands.__cog_commands__)

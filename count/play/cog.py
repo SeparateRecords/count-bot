@@ -2,17 +2,14 @@ from __future__ import annotations
 
 import asyncio
 import io
-from typing import TYPE_CHECKING, cast
+from typing import cast
 
 import discord
 import discord.ext.commands as commands
 from loguru import logger
 
 from count.errors import fail
-from count.play.audio import Countdown
-
-if TYPE_CHECKING:
-    from count.play.assets import PlayCogCommandStructure
+from count.play.audio import Countdown, PlayCogCommandStructure
 
 
 def create_play_cog(name: str, all_assets: PlayCogCommandStructure) -> commands.Cog:

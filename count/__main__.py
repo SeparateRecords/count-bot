@@ -1,4 +1,5 @@
 from __future__ import annotations
+import asyncio
 
 # fmt: off
 __import__("dotenv").load_dotenv()
@@ -6,11 +7,14 @@ __import__("dotenv").load_dotenv()
 
 import logging
 import sys
+from inspect import cleandoc
 from pathlib import Path
 from typing import Sequence
 
 import click
+import discord
 from loguru import logger
+
 
 from count.bot import new_bot
 
@@ -34,6 +38,20 @@ class RedirectToLoguru(logging.Handler):
 
 
 logging.basicConfig(handlers=[RedirectToLoguru()], level=0)
+
+
+def _unfucked_cleanup_loop(loop):
+    try:
+        discord.client._cancel_tasks(loop)  # type: ignore
+        if sys.version_info >= (3, 6):
+            loop.run_until_complete(loop.shutdown_asyncgens())
+    finally:
+        # dunno why _this_ fixes the annoying exception on Windows
+        loop.run_until_complete(asyncio.sleep(1))
+        loop.close()
+
+
+discord.client._cleanup_loop = _unfucked_cleanup_loop  # type: ignore
 
 
 class PathPath(click.Path):
@@ -115,7 +133,9 @@ class PathPath(click.Path):
         case_sensitive=True,
     ),
 )
+@click.pass_context
 def cli(
+    ctx: click.Context,
     token: str,
     owners: Sequence[int],
     config: Path,
@@ -145,7 +165,19 @@ def cli(
     )
 
     bot = new_bot(prefix, owners, config)
-    bot.run(token)
+    try:
+        bot.run(token)
+    except discord.PrivilegedIntentsRequired:
+        msg = cleandoc(
+            """
+            count-bot needs the 'members' intent, which must be enabled
+            in the developer portal of your bot. It isn't technically
+            required, but omitting it can trigger weird errors because
+            discord.py makes certain assumptions about the member cache
+            that may not be true without it.
+            """
+        )
+        ctx.fail(msg)
 
 
 if __name__ == "__main__":

@@ -1,26 +1,25 @@
 from __future__ import annotations
-import asyncio
 
 # fmt: off
 __import__("dotenv").load_dotenv()
 # fmt: on
 
+import asyncio
 import logging
 import sys
 from inspect import cleandoc
 from pathlib import Path
-from typing import Sequence
+from typing import Any, Optional, Sequence
 
 import click
 import discord
 from loguru import logger
 
-
 from count.bot import new_bot
 
 
 class RedirectToLoguru(logging.Handler):
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
         try:
             loguru_level = logger.level(record.levelname).name
         except ValueError:
@@ -30,9 +29,11 @@ class RedirectToLoguru(logging.Handler):
         depth = 2
         while frame.f_code.co_filename == logging.__file__:
             frame = frame.f_back
+            if not frame:
+                break
             depth += 1
 
-        logger.opt(depth=depth, exception=record.exc_info).log(
+        logger.opt(depth=depth, exception=record.exc_info).log(  # type: ignore
             loguru_level, record.getMessage()
         )
 
@@ -40,7 +41,7 @@ class RedirectToLoguru(logging.Handler):
 logging.basicConfig(handlers=[RedirectToLoguru()], level=0)
 
 
-def _unfucked_cleanup_loop(loop):
+def _unfucked_cleanup_loop(loop: asyncio.BaseEventLoop) -> None:
     try:
         discord.client._cancel_tasks(loop)  # type: ignore
         if sys.version_info >= (3, 6):
@@ -55,7 +56,12 @@ discord.client._cleanup_loop = _unfucked_cleanup_loop  # type: ignore
 
 
 class PathPath(click.Path):
-    def convert(self, value, param, ctx):
+    def convert(
+        self,
+        value: str,
+        param: Optional[click.Parameter],
+        ctx: Optional[click.Context],
+    ) -> Any:
         return Path(super().convert(value, param, ctx))
 
 

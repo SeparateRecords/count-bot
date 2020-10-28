@@ -78,6 +78,7 @@ async def play_audio(
         fail("Already counting in your server.")
 
     try:
+        # if it's not a VoiceClient, then it raised an exception.
         vc = await ctx.author.voice.channel.connect()  # type: ignore
         vc = cast(discord.VoiceClient, vc)
     except AttributeError:

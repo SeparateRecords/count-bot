@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from discord.ext import commands
+import discord.ext.commands as commands
 
 from count import config
 from count.common import ConfigKey

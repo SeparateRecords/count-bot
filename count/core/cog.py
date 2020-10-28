@@ -24,10 +24,8 @@ class CoreCommands(commands.Cog, name="Bot"):
     def cog_unload(self) -> None:
         self.bot.help_command = self._old_help
 
-    async def cog_check(self, ctx: commands.Context) -> bool:
-        return await ctx.bot.is_owner(ctx.author)
-
     @commands.command()
+    @commands.is_owner()
     async def kys(self, ctx: commands.Context) -> None:
         """Kill the bot"""
         await ctx.message.add_reaction("💀")
@@ -35,6 +33,7 @@ class CoreCommands(commands.Cog, name="Bot"):
         logger.success("Bot has been closed.")
 
     @commands.group()
+    @commands.is_owner()
     async def ext(self, ctx: commands.Context) -> None:
         """Interface with bot extensions directly"""
         if not ctx.subcommand_passed:

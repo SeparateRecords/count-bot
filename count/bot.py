@@ -75,9 +75,7 @@ def new_bot(prefix: str, owners: Collection[int], audio_config_path: Path) -> Bo
         case_insensitive=True,
         owner_ids=set(owners),
         description="Counts down for you, so you have an easier time staying in sync.",
-        intents=discord.Intents(
-            **dict(discord.Intents.default(), members=True, presences=True)
-        ),
+        intents=discord.Intents(**dict(discord.Intents.default(), members=True)),
     )
 
     bot.before_invoke(log_command_usage)

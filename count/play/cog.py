@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import io
-from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 import discord
@@ -10,77 +9,30 @@ import discord.ext.commands as commands
 from loguru import logger
 
 from count.errors import fail
-from count.play.assets import config_to_assets
-from count.play.audio_creator import AudioCreator
+from count.play.audio import Countdown
 
 if TYPE_CHECKING:
     from count.play.assets import PlayCogCommandStructure
 
-COG_NAME = "Play"
 
-
-class AudioManager(commands.Cog, name="Audio"):
-    """Manage the dynamically generated commands for counting."""
-
-    def __init__(
-        self,
-        bot: commands.Bot,
-        config_path: Path,
-    ) -> None:
-        self.bot = bot
-        self.config_path = config_path
-        self.add_commands_to_bot()
-
-    def cog_unload(self):
-        """Removes the generated cog when this cog is unloaded."""
-        self.bot.remove_cog(COG_NAME)
-
-    def add_commands_to_bot(self):
-        """Generates the cog and registers it to the bot.
-
-        If the cog is already loaded, it will be unloaded first.
-        """
-        # This goes first so that if it fails (for some reason)
-        # then nothing will be changed.
-        cog = self.create_cog()
-        self.bot.remove_cog(COG_NAME)
-        self.bot.add_cog(cog)
-
-    def create_cog(self):
-        """Creates the cog from the stored config."""
-        assets = config_to_assets(self.config_path)
-        cog = create_play_cog(assets)
-        return cog
-
-    @commands.command(hidden=True)
-    @commands.is_owner()
-    async def reload_config(self, ctx: commands.Context):
-        try:
-            self.add_commands_to_bot()
-        except Exception as e:
-            fail("Unable to reload the commands.", cause=e)
-        else:
-            await ctx.message.add_reaction("✅")
-
-
-def create_play_cog(all_assets: PlayCogCommandStructure) -> commands.Cog:
+def create_play_cog(name: str, all_assets: PlayCogCommandStructure) -> commands.Cog:
     """Generate a new cog containing commands that play audio."""
-    audio = AudioCreator(all_assets)
+    countdown = Countdown(all_assets)
 
     cog_dict = {}
     for command_name, data in all_assets.items():
         max_countdown = max(data.keys())
-        command = create_play_cog_command(command_name, audio, max_countdown)
+        command = create_play_cog_command(command_name, countdown, max_countdown)
         cog_dict[command_name] = command
 
-    NewCog = type(COG_NAME, (commands.Cog,), cog_dict)
-    cog = NewCog()
-    return cog
+    NewCog = type(name, (commands.Cog,), cog_dict)
+    cog_instance = NewCog()
+    return cog_instance
 
 
 def create_play_cog_command(
     command_name: str,
-    audio_creator: AudioCreator,
+    countdown: Countdown,
     max_countdown: int,
 ) -> commands.Command:
     """Get a command that plays audio.
@@ -101,7 +53,7 @@ def create_play_cog_command(
             ctx,
             seconds,
             command_name,
-            audio_creator,
+            countdown,
             max_countdown,
         )
 
@@ -112,13 +64,17 @@ async def play_audio(
     ctx: commands.Context,
     seconds: int,
     command_name: str,
-    audio_creator: AudioCreator,
+    countdown: Countdown,
     max_countdown: int,
 ) -> None:
     """Play audio in the message author's voice channel."""
     if seconds > max_countdown:
-        logger.error(f"Number to count from was greater than the maximum allowed.")
+        logger.error("Number to count from was greater than the maximum allowed.")
         fail(f"Too long, use a number under {max_countdown}.")
+
+    if seconds < 0:
+        logger.error("Number was under 0, unable to count.")
+        fail(f"Can't count down from numbers below 0, please use a positive number.")
 
     if ctx.voice_client:
         logger.error(f"Voice client already exists for guild: {ctx.guild!r}.")
@@ -135,12 +91,12 @@ async def play_audio(
         fail("Failed to connect to your voice channel.", cause=e)
 
     try:
-        audio_bytes = audio_creator.new(seconds, command_name)
+        audio_bytes = countdown(seconds, command_name)
     except KeyError as e:
-        fail("Something has gone terribly wrong (unable to play)", cause=e)
+        fail(f"Unable to create audio for '{command_name}'", cause=e)
 
-    audio_io = io.BytesIO(audio_bytes)
-    audio = discord.PCMAudio(audio_io)
+    audio_reader = io.BytesIO(audio_bytes)
+    audio = discord.PCMAudio(audio_reader)
 
     await asyncio.sleep(0.5)
 
@@ -148,7 +104,7 @@ async def play_audio(
         vc.play(audio)
     except Exception as e:
         await vc.disconnect()
-        fail(f"Failed to play: {e}", cause=e)
+        fail(f"Couldn't count down.", cause=e)
 
     await asyncio.sleep(seconds + 1)
 

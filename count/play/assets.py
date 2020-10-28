@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from configparser import ConfigParser
-from functools import lru_cache
 from pathlib import Path
 from string import Template, whitespace
 from typing import Dict, Mapping
@@ -72,7 +71,6 @@ def key_to_number(key: str) -> int:
     return number
 
 
-@lru_cache(maxsize=None)
 def path_to_audio(path: str, relative_path_root: Path) -> AudioSegment:
     """Perform transformations on the path to create an AudioSegment."""
 

@@ -6,15 +6,23 @@ from typing import cast
 from discord.ext import commands
 
 from count import config
-from count.common import ConfigKey, cog_name
-from count.play.cog import AudioManager
+from count.common import ConfigKey
+from count.play.assets import config_to_assets
+from count.play.cog import create_play_cog
+
+COG_NAME = "Play"
 
 
 def setup(bot: commands.Bot) -> None:
     path = config.get(bot, ConfigKey.AUDIO_CONFIG_PATH)
-    assert path  # no reason it shouldn't exist, but just in case.
-    bot.add_cog(AudioManager(bot, cast(Path, path)))
+
+    if isinstance(path, Path):
+        assets = config_to_assets(path)
+        cog = create_play_cog(COG_NAME, assets)
+        bot.add_cog(cog)
+    else:
+        raise ValueError("")
 
 
 def teardown(bot: commands.Bot) -> None:
-    bot.remove_cog(cog_name(AudioManager))
+    bot.remove_cog(COG_NAME)

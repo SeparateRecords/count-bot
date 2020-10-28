@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from count.play.assets import PlayCogCommandStructure
 
 
-class AudioCreator:
+class Countdown:
     """Create audio that never stutters by dynamically combining files."""
 
     def __init__(self, assets: PlayCogCommandStructure) -> None:
@@ -21,12 +21,7 @@ class AudioCreator:
         }
         self._cache: Dict[Tuple[int, str], bytes] = {}
 
-    def update(self, new_assets: PlayCogCommandStructure) -> None:
-        """Replace the old audio assets with new audio assets."""
-        self._cache.clear()
-        self._assets = new_assets
-
-    def new(self, seconds: int, command: str) -> bytes:
+    def __call__(self, seconds: int, command: str) -> bytes:
         """Generate PCM audio bytes by combining stored audio data.
 
         Raises `KeyError` if `command` is not an asset.

@@ -134,8 +134,6 @@ def cli(
         sys.stderr,
         filter="discord",
         level=dpy_log_level,
-        # enqueue=True,
-        colorize=False,
     )
     show_debug_info = logger.level(log_level).no < logger.level("INFO").no
     logger.add(
@@ -144,7 +142,6 @@ def cli(
         level=log_level,
         backtrace=show_debug_info,
         diagnose=show_debug_info,
-        # enqueue=True,
     )
 
     bot = new_bot(prefix, owners, config)

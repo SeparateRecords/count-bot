@@ -41,18 +41,26 @@ class RedirectToLoguru(logging.Handler):
 logging.basicConfig(handlers=[RedirectToLoguru()], level=0)
 
 
-def _unfucked_cleanup_loop(loop: asyncio.BaseEventLoop) -> None:
-    try:
-        discord.client._cancel_tasks(loop)  # type: ignore
-        if sys.version_info >= (3, 6):
-            loop.run_until_complete(loop.shutdown_asyncgens())
-    finally:
-        # dunno why _this_ fixes the annoying exception on Windows
-        loop.run_until_complete(asyncio.sleep(1))
-        loop.close()
+if hasattr(discord.client, "_cleanup_loop"):
+    # it's private so it may change at any time, worth checking ahead
+    # of time so I can be alerted if it ever goes missing
 
+    def _cleanup_loop(loop: asyncio.BaseEventLoop) -> None:
+        try:
+            discord.client._cancel_tasks(loop)  # type: ignore
+            if sys.version_info >= (3, 6):
+                loop.run_until_complete(loop.shutdown_asyncgens())
+        finally:
+            # wait a bit longer for aiohttp tasks to finish to avoid
+            # the incredibly ugly (but ultimately harmless) exception
+            loop.run_until_complete(asyncio.sleep(1))
+            loop.close()
 
-discord.client._cleanup_loop = _unfucked_cleanup_loop  # type: ignore
+    setattr(discord.client, "_cleanup_loop", _cleanup_loop)
+
+else:
+    msg = "discord.client._cleanup_loop doesn't exist, shutdown may not be graceful"
+    logger.warning(msg)
 
 
 class PathPath(click.Path):

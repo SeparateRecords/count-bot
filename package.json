@@ -1,0 +1,9 @@
+{
+    "devDependencies": {
+        "pyright": "^1"
+    },
+    "scripts": {
+        "postinstall": "poetry install",
+        "update": "npm update && poetry update"
+    }
+}

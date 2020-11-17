@@ -2,56 +2,70 @@ from __future__ import annotations
 
 import asyncio
 import io
-from typing import cast
+from typing import Any, Dict, Iterator, List, cast
 
 import discord
 import discord.ext.commands as commands
 from loguru import logger
 
 from count.errors import fail
-from count.play.audio import Countdown, PlayCogCommandStructure
+from count.play.audio import Counter
+from count.play.config import PlayCogCommandStructure
 
 
-def create_play_cog(name: str, all_assets: PlayCogCommandStructure) -> commands.Cog:
+def create_play_cog(cog_name: str, assets: PlayCogCommandStructure) -> commands.Cog:
     """Generate a new cog containing commands that play audio."""
-    countdown = Countdown(all_assets)
+    cog_dict: Dict[str, Any] = {}
+    count = Counter(assets)
 
-    cog_dict = {}
-    for command_name, data in all_assets.items():
-        max_countdown = max(data.keys())
-        command = create_play_cog_command(command_name, countdown, max_countdown)
-        cog_dict[command_name] = command
+    def name_gen() -> Iterator[str]:
+        i = 0
+        while True:
+            i += 1
+            yield f"__{i}"
 
-    NewCog = type(name, (commands.Cog,), cog_dict)
-    cog_instance = NewCog()
-    return cog_instance
+    cmd_names = name_gen()
+
+    for command_name, data in assets.items():
+        max_countdown = max(data["audio"].keys())
+        aliases = data["metadata"]["aliases"]
+
+        cog_dict[next(cmd_names)] = new_command(
+            command_name,
+            command_name,
+            aliases,
+            count,
+            max_countdown,
+        )
+
+    NewCog = type(cog_name, (commands.Cog,), cog_dict)
+    return NewCog()
 
 
-def create_play_cog_command(
+def new_command(
     command_name: str,
-    countdown: Countdown,
+    asset_name: str,
+    aliases: List[str],
+    count: Counter,
     max_countdown: int,
 ) -> commands.Command:
-    """Get a command that plays audio.
+    """Get a command that plays audio. Basically a shim for `play_audio`"""
 
-    The first argument of the command is unused because when cogs are
-    created each command has `self` injected as the first positional
-    argument.
-
-    Command objects returned by this function are basically shims for
-    `play_audio`.
-    """
     default = min(3, max_countdown)
 
-    @commands.command(name=command_name)
+    # The first argument of the command is unused because when cogs are
+    # created each command has `self` injected as the first positional
+    # argument.
+
+    @commands.command(name=command_name, aliases=aliases)
     @commands.guild_only()
     async def play(_, ctx: commands.Context, seconds: int = default) -> None:
         await play_audio(
             ctx,
             seconds,
-            command_name,
-            countdown,
-            max_countdown,
+            asset_name,
+            count,
+            default,
         )
 
     return play
@@ -60,11 +74,12 @@ def create_play_cog_command(
 async def play_audio(
     ctx: commands.Context,
     seconds: int,
-    command_name: str,
-    countdown: Countdown,
+    asset_key: str,
+    count: Counter,
     max_countdown: int,
 ) -> None:
     """Play audio in the message author's voice channel."""
+
     if seconds > max_countdown:
         logger.error("Number to count from was greater than the maximum allowed.")
         fail(f"Too long, use a number under {max_countdown}.")
@@ -89,9 +104,9 @@ async def play_audio(
         fail("Failed to connect to your voice channel.", cause=e)
 
     try:
-        audio_bytes = countdown(seconds, command_name)
+        audio_bytes = count(seconds, asset_key)
     except KeyError as e:
-        fail(f"Unable to create audio for '{command_name}'", cause=e)
+        fail(f"Unable to create audio for '{asset_key}'", cause=e)
 
     audio_reader = io.BytesIO(audio_bytes)
     audio = discord.PCMAudio(audio_reader)

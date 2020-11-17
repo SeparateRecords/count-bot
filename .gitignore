@@ -1,3 +1,7 @@
+# npm
+node_modules/
+package-lock.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -19,7 +23,7 @@ dist/
 # Allows you to have a custom config file in this directory
 /*.ini
 
-# You can create a directory in this repository (eg. 'my_assets/')
+# You can create a directory in this repository (eg. 'custom_assets', 'logs')
 /*/
 !/count/
 !/.vscode/

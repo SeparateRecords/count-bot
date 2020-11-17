@@ -32,6 +32,18 @@ class CoreCommands(commands.Cog, name="Bot"):
         await ctx.bot.logout()
         logger.success("Bot has been closed.")
 
+    @commands.command()
+    @commands.is_owner()
+    async def disconnect(self, ctx: commands.Context) -> None:
+        """Disconnect from the current VC"""
+        vc = ctx.voice_client
+        if not vc:
+            fail("No voice client is available.")
+        try:
+            vc.disconnect(force=True)
+        except Exception as e:
+            fail("Error during disconnect.", cause=e)
+
     @commands.group()
     @commands.is_owner()
     async def ext(self, ctx: commands.Context) -> None:

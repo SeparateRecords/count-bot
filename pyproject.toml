@@ -4,7 +4,7 @@ description = "Discord bot for keeping people in sync by counting you in."
 license = "ISC"
 name = "count"
 readme = "README.md"
-version = "2.4.0"
+version = "2.5.0"
 
 [tool.poetry.dependencies]
 python = "^3.8"

@@ -1,0 +1,5 @@
+{
+    "enableTypeIgnoreComments": true,
+    "strictParameterNoneValue": true,
+    "include": ["count"]
+}

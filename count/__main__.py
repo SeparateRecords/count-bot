@@ -15,7 +15,7 @@ import click
 import discord
 from loguru import logger
 
-from count.bot import new_bot
+from count.bot import create_bot
 
 
 class RedirectToLoguru(logging.Handler):
@@ -178,7 +178,7 @@ def cli(
         diagnose=show_debug_info,
     )
 
-    bot = new_bot(prefix, owners, config)
+    bot = create_bot(prefix, owners, config)
     try:
         bot.run(token)
     except discord.PrivilegedIntentsRequired:

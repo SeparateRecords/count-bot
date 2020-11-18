@@ -5,7 +5,7 @@ from typing import Dict, Tuple
 
 from pydub import AudioSegment
 
-from .config import PlayCogCommandStructure
+from .config import CommandConfigData
 
 
 def safe_for_discord(audio: AudioSegment) -> AudioSegment:
@@ -20,7 +20,7 @@ def safe_for_discord(audio: AudioSegment) -> AudioSegment:
 class Counter:
     """Create audio that never stutters by dynamically combining files."""
 
-    def __init__(self, assets: PlayCogCommandStructure) -> None:
+    def __init__(self, assets: CommandConfigData) -> None:
         # Using a cache to avoid the (possibly) expensive duplicate
         # work. The only way the cache can become invalid is if the dict
         # gets mutated, copy it to ensure there are no other references

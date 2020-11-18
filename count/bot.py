@@ -6,7 +6,7 @@ import discord
 import discord.ext.commands as commands
 from loguru import logger
 
-from count import config
+from count import bot_state
 from count.errors import ShowFailureInChat
 
 if TYPE_CHECKING:
@@ -42,8 +42,8 @@ class Bot(commands.Bot):
                 return
 
         if isinstance(exception, commands.MissingRequiredArgument):
-            # try to be as specific as possible
-            await context.send_help(context.invoked_subcommand or context.command)
+            command = context.invoked_subcommand or context.command
+            await context.send_help(command)
             return
 
         elif isinstance(exception, commands.CommandNotFound):
@@ -80,7 +80,7 @@ def create_bot(prefix: str, owners: Collection[int], audio_config_path: Path) ->
     bot.before_invoke(log_command_usage)
 
     initial_config = {"AUDIO_CONFIG_PATH": audio_config_path}
-    config.install(bot, initial_config)
+    bot_state.setup(bot, initial_config)
 
     bot.load_extension("count.core")
     bot.load_extension("count.play")

@@ -7,7 +7,7 @@ import discord.ext.commands as commands
 Cls = TypeVar("Cls")
 
 
-class ConfigCog(commands.Cog, name="Config Storage"):
+class StateCog(commands.Cog, name="Bot State"):
     def __init__(self, bot: commands.Bot, data: Dict[object, object]) -> None:
         self.bot = bot
         self.data = data
